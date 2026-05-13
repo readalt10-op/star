@@ -13,8 +13,45 @@
       overflow: hidden;
       background: #000;
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      padding-top: 60px;
     }
 
+    /* NAV BAR */
+    .nav-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 52px;
+      z-index: 10000;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-bar a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 10px;
+      border-radius: 10px;
+      transition: 0.2s ease;
+    }
+
+    .nav-bar a:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* BACKGROUND */
     #starfield {
       position: fixed;
       top: 0;
@@ -90,7 +127,7 @@
       padding: 18px 10px;
       border-radius: 16px;
       text-align: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s ease;
     }
 
     .link-card-small:hover {
@@ -111,12 +148,23 @@
       border-color: rgba(80, 220, 120, 0.6);
       box-shadow: 0 0 20px rgba(80, 220, 120, 0.2);
       color: #fff;
-      transform: translateY(-4px) scale(1.02);
     }
   </style>
 </head>
 
 <body>
+
+  <!-- NAV BAR -->
+  <div class="nav-bar">
+    <a href="index.html">🏠 Home</a>
+    <a href="pr0xies.html">🛡️ Proxies</a>
+    <a href="m0vies.html">🎬 Movies</a>
+    <a href="com1cs.html">📖 Comics</a>
+    <a href="an1me.html">✨ Anime</a>
+    <a href="music.html">🎵 Music</a>
+    <a href="visual-help.html">❓ Help</a>
+  </div>
+
   <canvas id="starfield"></canvas>
 
   <div id="overlay">
@@ -133,6 +181,7 @@
       <div class="scroll-container">
 
         <p class="section-label">✅ UPDATED (5/12/26)</p>
+
         <div class="link-grid" style="margin-bottom:28px;">
           <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/vapor" target="_blank" class="link-card-small working">Vapor</a>
           <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/lunaar" target="_blank" class="link-card-small working">Lunaar</a>
@@ -141,41 +190,12 @@
         </div>
 
         <p class="section-label">All Proxies</p>
+
         <div class="link-grid">
           <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/awp" target="_blank" class="link-card-small">AWP</a>
           <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/axiom" target="_blank" class="link-card-small">Axiom</a>
           <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/celestial" target="_blank" class="link-card-small">Celestial</a>
           <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/cherri" target="_blank" class="link-card-small">Cherri</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/cherry" target="_blank" class="link-card-small">Cherry</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/daydreamx" target="_blank" class="link-card-small">DayDreamX</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/dogeub" target="_blank" class="link-card-small">Dogeub</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/fern" target="_blank" class="link-card-small">Fern</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/froggies-arcade" target="_blank" class="link-card-small">Froggie's</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/galaxy" target="_blank" class="link-card-small">Galaxy</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/infamous" target="_blank" class="link-card-small">Infamous</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/lucide" target="_blank" class="link-card-small">Lucide</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/luminal" target="_blank" class="link-card-small">Luminal</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/lunaar" target="_blank" class="link-card-small">Lunaar</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/nebuli" target="_blank" class="link-card-small">Nebuli</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/overcloacked" target="_blank" class="link-card-small">OverCloacked</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/quasar" target="_blank" class="link-card-small">Quasar</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/rammerhead" target="_blank" class="link-card-small">Rammerhead</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/red-exploit" target="_blank" class="link-card-small">Red Exploit</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/rosin" target="_blank" class="link-card-small">Rosin</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/selenite" target="_blank" class="link-card-small">Selenite</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/shadow" target="_blank" class="link-card-small">Shadow</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/space" target="_blank" class="link-card-small">Space</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/strawberry" target="_blank" class="link-card-small">Strawberry</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/studyhub" target="_blank" class="link-card-small">Studyhub</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/truffle" target="_blank" class="link-card-small">Truffle</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/tungtung" target="_blank" class="link-card-small">TungTung</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/utopia" target="_blank" class="link-card-small">Utopia</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/uniub" target="_blank" class="link-card-small">UniUb</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/vapor" target="_blank" class="link-card-small">Vapor</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/valera" target="_blank" class="link-card-small">Valera</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/void-network" target="_blank" class="link-card-small">Void</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/waves" target="_blank" class="link-card-small">Waves</a>
-          <a href="https://sites.google.com/online.houstonisd.org/star/pr0xies/zodiac" target="_blank" class="link-card-small">Zodiac</a>
         </div>
 
       </div>
@@ -187,146 +207,5 @@
     </div>
   </div>
 
-  <script>
-    const canvas = document.getElementById('starfield');
-    const ctx = canvas.getContext('2d');
-    let W, H, stars = [];
-
-    const mouse = { x: -9999, y: -9999 };
-    const NUM = 200;
-    const REPEL_RADIUS = 160;
-    const REPEL_STRENGTH = 14;
-    const RETURN_FRICTION = 0.9;
-    const FLEE_FRICTION = 0.8;
-
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-
-    function rand(a, b) {
-      return a + Math.random() * (b - a);
-    }
-
-    function makeStar() {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = rand(0.08, 0.32);
-
-      return {
-        x: Math.random() * W,
-        y: Math.random() * H,
-        ox: 0,
-        oy: 0,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        size: rand(0.8, 2.8),
-        color: Math.random() < 0.2 ? `hsl(${rand(190,260)},80%,85%)` : '#ffffff',
-        twinkleSpeed: rand(0.005, 0.02),
-        twinkleOffset: Math.random() * Math.PI * 2,
-        alpha: rand(0.4, 1.0),
-        shape: Math.random() < 0.3 ? 'star4' : 'dot'
-      };
-    }
-
-    function drawDot(x, y, r, alpha, color) {
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    function drawStar4(x, y, r, alpha, color) {
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = color;
-      ctx.translate(x, y);
-
-      ctx.beginPath();
-      for (let i = 0; i < 8; i++) {
-        const a = (i * Math.PI) / 4;
-        const rad = i % 2 === 0 ? r : r * 0.4;
-        const px = Math.cos(a) * rad;
-        const py = Math.sin(a) * rad;
-
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-    }
-
-    let t = 0;
-
-    function animate() {
-      requestAnimationFrame(animate);
-      ctx.clearRect(0, 0, W, H);
-
-      const bg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.9);
-      bg.addColorStop(0, '#0a0a24');
-      bg.addColorStop(1, '#000000');
-
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, W, H);
-
-      t += 0.016;
-
-      for (const s of stars) {
-        s.x += s.vx;
-        s.y += s.vy;
-
-        if (s.x < -5) s.x = W + 5;
-        if (s.x > W + 5) s.x = -5;
-        if (s.y < -5) s.y = H + 5;
-        if (s.y > H + 5) s.y = -5;
-
-        const dx = s.x - mouse.x;
-        const dy = s.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < REPEL_RADIUS && dist > 0) {
-          const norm = 1 - (dist / REPEL_RADIUS);
-          const force = norm * norm * REPEL_STRENGTH;
-
-          s.ox += (dx / dist) * force * 0.2;
-          s.oy += (dy / dist) * force * 0.2;
-
-          s.ox *= FLEE_FRICTION;
-          s.oy *= FLEE_FRICTION;
-        } else {
-          s.ox *= RETURN_FRICTION;
-          s.oy *= RETURN_FRICTION;
-        }
-
-        const rx = s.x + s.ox;
-        const ry = s.y + s.oy;
-
-        const twinkle = 0.5 + 0.5 * Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset);
-        const alpha = s.alpha * (0.6 + 0.4 * twinkle);
-
-        if (s.shape === 'star4') drawStar4(rx, ry, s.size * 1.6, alpha, s.color);
-        else drawDot(rx, ry, s.size, alpha, s.color);
-      }
-    }
-
-    window.addEventListener('resize', resize);
-    window.addEventListener('mousemove', e => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-
-    window.addEventListener('mouseleave', () => {
-      mouse.x = -9999;
-      mouse.y = -9999;
-    });
-
-    resize();
-    stars = Array.from({ length: NUM }, makeStar);
-    animate();
-  </script>
 </body>
 </html>
