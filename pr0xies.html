@@ -6,6 +6,80 @@
   <title>Proxy Directory</title>
 
   <style>
+    html, body {
+  touch-action: manipulation;
+}
+    <body>
+
+  <!-- NAV BAR -->
+  <div class="nav-bar">
+    <a href="index.html">🏠 Home</a>
+    <a href="pr0xies.html">🛡️ Proxies</a>
+    <a href="m0vies.html">🎬 Movies</a>
+    <a href="com1cs.html">📖 Comics</a>
+    <a href="an1me.html">✨ Anime</a>
+    <a href="music.html">🎵 Music</a>
+    <a href="visual-help.html">❓ Help</a>
+  </div>
+
+  <!-- BACKGROUND LAYER -->
+  <canvas id="starfield"></canvas>
+
+  <!-- UI LAYER -->
+  <div id="overlay">
+    <div id="panel">
+      <!-- your existing content stays EXACTLY the same -->
+
+/* NAV ALWAYS ON TOP */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 52px;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-bar a {
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: 0.2s ease;
+}
+
+.nav-bar a:hover {
+  background: rgba(255,255,255,0.12);
+  color: white;
+}
+
+/* CRITICAL FIX: STOP CANVAS FROM BLOCKING CLICKS */
+#starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* MAKE SURE UI IS ABOVE CANVAS */
+#overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+}
+
+#panel {
+  position: relative;
+  z-index: 3;
+}
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
