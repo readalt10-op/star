@@ -1,1 +1,1879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movies</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body { height: 100%; overflow-x: hidden; background: #000; font-family: 'Raleway', sans-serif; }
+
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #ffffff;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: 8px;
+      text-align: center;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      text-shadow: 0 0 40px rgba(255,255,255,0.12);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.25);
+      font-weight: 300;
+      font-size: 13px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+
+    .notice-banner {
+      max-width: 820px;
+      margin: 0 auto 28px auto;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,170,0,0.10), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,170,0,0.25);
+      color: rgba(255,255,255,0.82);
+      text-align: center;
+      font-size: 13px;
+      letter-spacing: 1px;
+      line-height: 1.6;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    .notice-banner b { color: #ffd27a; }
+
+    .search-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      max-width: 480px;
+      padding: 12px 24px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: #ffffff;
+      font-family: 'Raleway', sans-serif;
+      font-size: 14px;
+      letter-spacing: 1px;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    .search-wrapper input::placeholder { color: rgba(255,255,255,0.25); letter-spacing: 2px; font-size: 13px; }
+    .search-wrapper input:focus { border-color: rgba(255,255,255,0.4); }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      margin-top: -20px;
+    }
+
+    .btn-surprise {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.6);
+      font-family: 'Raleway', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-surprise:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .btn-report {
+      background: rgba(255,80,80,0.08);
+      border: 1px solid rgba(255,80,80,0.2);
+      color: rgba(255,120,120,0.7);
+      font-family: 'Raleway', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-report:hover {
+      background: rgba(255,80,80,0.15);
+      color: rgba(255,140,140,1);
+      border-color: rgba(255,80,80,0.4);
+    }
+
+    .scene { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; }
+
+    .movie-card {
+      width: 180px;
+      height: 270px;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+      display: block;
+      text-decoration: none;
+    }
+
+    .movie-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+    .movie-card:hover { transform: scale(1.25); z-index: 10; box-shadow: 0 20px 50px rgba(0,0,0,0.65); }
+    .movie-card:hover img { transform: scale(1.05); }
+
+    .card-title {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 12px 10px;
+      background: linear-gradient(to top, rgba(0,0,0,0.95) 60%, transparent);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+    }
+
+    .multi-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, #ff2d55, #ff6a00);
+      color: #ffffff;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      padding: 5px 10px;
+      border-radius: 30px;
+      text-transform: uppercase;
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(255,90,0,0.45), 0 4px 10px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(6px);
+    }
+
+    .tv-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(100,180,255,0.25);
+      color: rgba(180,220,255,1);
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 3px 7px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(100,180,255,0.3);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      animation: fadeBg 0.2s ease;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: #0d1626;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 480px;
+      padding: 28px;
+      animation: slideUp 0.25s ease;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+
+    .modal::-webkit-scrollbar { width: 4px; }
+    .modal::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+    .modal-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .modal-poster { width: 60px; height: 90px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+
+    .modal-info h2 {
+      color: #ffffff;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+
+    .modal-info p { color: rgba(255,255,255,0.3); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 20px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover { color: #fff; }
+
+    .season-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.8);
+      font-family: 'Raleway', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, border 0.2s, color 0.2s;
+      text-align: left;
+    }
+
+    .season-btn:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.2); color: #ffffff; }
+    .season-btn span { font-size: 16px; opacity: 0.4; }
+
+    .no-results {
+      color: rgba(255,255,255,0.3);
+      font-size: 15px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-align: center;
+      width: 100%;
+      margin-top: 40px;
+      display: none;
+      font-weight: 300;
+    }
+
+    @keyframes fadeBg { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div class="modal-header">
+      <img src="" alt="" class="modal-poster" id="modalPoster">
+      <div class="modal-info">
+        <h2 id="modalTitle"></h2>
+        <p>Select a version</p>
+      </div>
+    </div>
+    <div id="modalSeasons"></div>
+  </div>
+</div>
+
+<div class="page">
+  <h1>Movies</h1>
+  <p class="subtitle">Your Collection</p>
+
+  <div class="notice-banner">
+    ⚠️ Some movies may not be playable in-browser.
+    <b>Please download non-playable movies</b> to watch them properly.
+  </div>
+
+  <div class="search-wrapper">
+    <input type="text" id="search" placeholder="Search titles..." oninput="filterCards()" />
+  </div>
+
+  <div class="controls">
+    <button class="btn-surprise" onclick="surpriseMe()">✦ Surprise Me!</button>
+    <a class="btn-report" href="https://docs.google.com/forms/d/e/1FAIpQLScViq5Jqep3AGt9BpGzPRgjemgZxNy4SqhN7vlgAuLC1O8Low/viewform?usp=publish-editor" target="_blank">⚑ Report Movie</a>
+  </div>
+
+  <div class="scene" id="grid">
+
+    <!-- 8 Mile -->
+    <a class="movie-card" href="https://drive.google.com/file/d/13KF2oQ-b1WRvbjL0vMMAMlI0Vj8TYBuM/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/7BmQj8qE1FLuLTf7Xjf9sdIHzoa.jpg" alt="8 Mile">
+      <div class="card-title">8 Mile</div>
+    </a>
+
+    <!-- A Bug's Life -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1AIq4OqiMWiY9zZSayF5VID7pfTwSH6BM/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w600_and_h900_face/Ah3J9OJVc2CNCuH2zMydXy9fmIC.jpg" alt="A Bug's Life">
+      <div class="card-title">A Bug's Life</div>
+    </a>
+
+    <!-- A Charlie Brown Christmas -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1e2UIrJdsz_0k5tp2v0EnPZiPv2ZQSTzg/view?pli=1" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w600_and_h900_face/vtaufTzJBMJAeziQA1eP4BLU24C.jpg" alt="A Charlie Brown Christmas">
+      <div class="card-title">A Charlie Brown Christmas</div>
+    </a>
+
+    <!-- A Christmas Carol -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1hi5sfVVAYK5AsMis11QjD5JLvL5aUY0h/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/xNwlAIdx1Ln28GRiQttUP9Gojy2.jpg" alt="A Christmas Carol">
+      <div class="card-title">A Christmas Carol</div>
+    </a>
+
+    <!-- A Christmas Story -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1nz29MUfftWx_MeBVh4Bn7TVXlUy_6BH2/view?usp=drive_link" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/en/6/65/A_Christmas_Story_film_poster.jpg" alt="A Christmas Story">
+      <div class="card-title">A Christmas Story</div>
+    </a>
+
+    <!-- A Goofy Movie -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1ify_EMaQW-ZAn2F0STztn2AGU-jE7aHL/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/bycmMhO3iIoEDzP768sUjq2RV4T.jpg" alt="A Goofy Movie">
+      <div class="card-title">A Goofy Movie</div>
+    </a>
+
+    <!-- A Very Brady Sequel -->
+    <a class="movie-card" href="https://drive.google.com/file/d/139xwpHkb9tF64bSc0PnKZMBGtdCHh7pW/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/7xqOkzAQvXCLkDtmlWU6HZnOhru.jpg" alt="A Very Brady Sequel">
+      <div class="card-title">A Very Brady Sequel</div>
+    </a>
+
+    <!-- A Nightmare on Elm Street 5 -->
+    <a class="movie-card" href="https://drive.google.com/file/d/16EYEuQa7aZVhqsUIF-NR8q8vqBailLsp/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/kizvpgXQfrAgN8FhOd87LbKk6kO.jpg" alt="A Nightmare on Elm Street 5">
+      <div class="card-title">A Nightmare on Elm Street 5</div>
+    </a>
+
+    <!-- The Addams Family -->
+    <a class="movie-card" href="https://drive.google.com/file/d/19ZYLs_076nTJtl7bEUtkwpfbwwj-GevJ/view?usp=sharing" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/en/0/04/The_Addams_Family.jpg" alt="The Addams Family">
+      <div class="card-title">The Addams Family</div>
+    </a>
+
+    <!-- Alvin and the Chipmunks -->
+    <div class="movie-card" onclick='openModal("Alvin and the Chipmunks","https://upload.wikimedia.org/wikipedia/en/d/dc/Alvin_and_the_Chipmunks2007.jpg",[["Alvin and the Chipmunks (2007)","https://drive.google.com/file/d/1uCRRJZj1GAaweX996uHbF2zxPoessmGW/view?usp=share_link"],["The Squeakquel","https://drive.google.com/file/d/1em55qHTtdrWD4Dox9CXs9r1042TLu_cu/view?usp=share_link"],["Chipwrecked","https://drive.google.com/file/d/1LTKy48IbusfXsl5nSNDTd0M3A8B3aPke/view?usp=share_link"],["Road Chip","https://drive.google.com/file/d/1ljX4FCKuoIuDR-hcH3J97hZ21Os_4C3W/view?usp=drive_link"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/d/dc/Alvin_and_the_Chipmunks2007.jpg" alt="Alvin and the Chipmunks">
+      <div class="card-title">Alvin and the Chipmunks</div>
+      <div class="multi-badge">4 Films</div>
+    </div>
+
+    <!-- The Amazing Spider-Man -->
+    <div class="movie-card" onclick='openModal("The Amazing Spider-Man","https://media.themoviedb.org/t/p/w188_and_h282_face/jexoNYnPd6vVrmygwF6QZmWPFdu.jpg",[["The Amazing Spider-Man","https://drive.google.com/file/d/1Xf8xZcY3kneGFln8NPsQMt7CLtmGhEeD/view?usp=drive_link"],["The Amazing Spider-Man 2","https://drive.google.com/file/d/1hnYa-Pkxqu6Qhhp56QXE34Rnctia_3yw/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/jexoNYnPd6vVrmygwF6QZmWPFdu.jpg" alt="The Amazing Spider-Man">
+      <div class="card-title">The Amazing Spider-Man</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- An Extremely Goofy Movie -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1e4NzmeC84qest_9Wzmtvmi80brGPYnsN/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/qr5Q3S7HC16XHQBqE4ZsJJvgUDU.jpg" alt="An Extremely Goofy Movie">
+      <div class="card-title">An Extremely Goofy Movie</div>
+    </a>
+
+    <!-- Annabelle -->
+    <div class="movie-card" onclick='openModal("Annabelle","https://upload.wikimedia.org/wikipedia/en/9/90/Annabelle_film_poster.jpg",[["Annabelle (2014)","https://drive.google.com/file/d/12sQn1gxallBigyxC2aDFUWsKqX_g-e-7/view"],["Annabelle: Creation","https://drive.google.com/file/d/1zjZeR3QEhdt1zuCJnRCybB9yXqUHBOn4/view"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/9/90/Annabelle_film_poster.jpg" alt="Annabelle">
+      <div class="card-title">Annabelle</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Annie -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1GYQqHUdyWMNQJKj4Sa8SGW0ZRX32D5og/view" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/en/c/cd/Annie-film.jpg" alt="Annie">
+      <div class="card-title">Annie</div>
+    </a>
+
+    <!-- Ant-Man and the Wasp: Quantumania -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1AW3Zm8256tzZ-37lmgYmIGse4knu8IdA/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/qnqGbB22YJ7dSs4o6M7exTpNxPz.jpg" alt="Ant-Man and the Wasp: Quantumania">
+      <div class="card-title">Ant-Man and the Wasp: Quantumania</div>
+    </a>
+
+    <!-- Star Wars: Attack of the Clones -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1u0ZRN7s8rgAMYtvnGf3zTjpM7Fu6TmW_/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/oZNPzxqM2s5DyVWab09NTQScDQt.jpg" alt="Star Wars: Attack of the Clones">
+      <div class="card-title">Star Wars: Attack of the Clones</div>
+    </a>
+
+    <!-- Avatar -->
+    <a class="movie-card" href="https://drive.google.com/file/d/16tKuEYtxi7EeKtX3yZZR-nXgZ_oGTxXS/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/gKY6q7SjCkAU6FqvqWybDYgUKIF.jpg" alt="Avatar">
+      <div class="card-title">Avatar</div>
+    </a>
+
+    <!-- Avengers: Endgame -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1ehi9tidOYHb1RMldxtBw6-L3UhyEKVm9/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/ulzhLuWrPK07P1YkdWQLZnQh1JL.jpg" alt="Avengers: Endgame">
+      <div class="card-title">Avengers: Endgame</div>
+    </a>
+
+    <!-- Avengers: Infinity War -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1oKDbw6zCdSRKRbABn6nKf_4LGsA3ftwL/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg" alt="Avengers: Infinity War">
+      <div class="card-title">Avengers: Infinity War</div>
+    </a>
+
+    <!-- AXL -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1XZg46Ss_6P2_cY_sTjPwN0zlDyy9T47O/view" target="_blank">
+      <img src="https://resizing.flixster.com/D6aLbOtCJdj4ItAJL_UgDI_lzzA=/206x305/v2/https://resizing.flixster.com/Pk9SKvUJvqBlyOLflyS-HwocX0E=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzLzEyYzBhNThlLTlmMmMtNDYyNC1iMjY1LTE0NTVhMWEzY2ZiMy53ZWJw" alt="AXL">
+      <div class="card-title">AXL</div>
+    </a>
+
+    <!-- Back to the Future -->
+    <div class="movie-card" onclick='openModal("Back to the Future","https://media.themoviedb.org/t/p/w188_and_h282_face/vN5B5WgYscRGcQpVhHl6p9DDTP0.jpg",[["Back to the Future","https://drive.google.com/file/d/1ZwP0FLdFdAoeskqGvQYX5CwqEeSFWS1G/view"],["Back to the Future Part II","https://drive.google.com/file/d/1vmA2LTkSzbtUJve8TTy2UVkPAfHMtGwK/view"],["Back to the Future Part III","https://drive.google.com/file/d/16A4hzHFTcNduq6F-u4zQw7iTha5aEKD-/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/vN5B5WgYscRGcQpVhHl6p9DDTP0.jpg" alt="Back to the Future">
+      <div class="card-title">Back to the Future</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- The Bad Guys 2 -->
+    <a class="movie-card" href="https://drive.google.com/file/d/14i4ehISzm0r3u-zjYK5BdHBUSTEqCb8z/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/26oSPnq0ct59l07QOXZKyzsiRtN.jpg" alt="The Bad Guys 2">
+      <div class="card-title">The Bad Guys 2</div>
+    </a>
+
+    <!-- Barbie -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1K88LvZ6q9KRwsdiVQ72Wrh5DQqWVLkd3/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg" alt="Barbie">
+      <div class="card-title">Barbie</div>
+    </a>
+
+    <!-- Batman -->
+    <div class="movie-card" onclick='openModal("Batman","https://media.themoviedb.org/t/p/w188_and_h282_face/1ZEJuuDh0Zpi5ELM3Zev0GBhQ3R.jpg",[["Batman (1989)","https://drive.google.com/file/d/1P8z8U0j5UHxqTq0taTj18TgG6nZwSKYd/view"],["Batman Returns","https://drive.google.com/file/d/1aeYtz38ljtxCCtuVs4x0zuUh2TWKf-K6/view"],["Batman Forever","https://drive.google.com/file/d/1YFYuZeG8EXxNkPdB7jIIGOFm7ULi349r/view"],["Batman & Robin","https://drive.google.com/file/d/1uMzsWkDLeiE0X7M0rm5EUUx3y26yzhc2/view"],["Batman Begins","https://drive.google.com/file/d/1ZegfkrD50sGDUVJ-4d9IiBpR0MTmdphx/view"],["The Dark Knight","https://drive.google.com/file/d/1CZvw1MgSLVQR9Z9L8qpl8j1oI7DnMDWr/view"],["The Dark Knight Rises","https://drive.google.com/file/d/1ssHaJjHmu-V5fTC4_AoyABD_KYB1dkNX/view"],["The Batman (2022)","https://drive.google.com/file/d/16si_yvGyZn5mgvNIHil5xXOR3I8RaTKb/view?usp=sharing"],["Batman: The Return of the Joker","https://drive.google.com/file/d/1wEmEjdaO0dp1nonCewG8URl6YsQOk0ru/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/1ZEJuuDh0Zpi5ELM3Zev0GBhQ3R.jpg" alt="Batman">
+      <div class="card-title">Batman</div>
+      <div class="multi-badge">9 Films</div>
+    </div>
+
+    <!-- Beetlejuice -->
+    <div class="movie-card" onclick='openModal("Beetlejuice","https://media.themoviedb.org/t/p/w188_and_h282_face/6KZUc5WlukYvlixgNYJaFXzgdkv.jpg",[["Beetlejuice","https://drive.google.com/file/d/1fs2-oBGADuUeepkLX2V3zxNNUstHvBTs/view?usp=sharing"],["Beetlejuice Beetlejuice","https://drive.google.com/file/d/1Wk2tXQo11rTI85i_YjsSPiRorgDaDYrv/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/6KZUc5WlukYvlixgNYJaFXzgdkv.jpg" alt="Beetlejuice">
+      <div class="card-title">Beetlejuice</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Birds of Prey -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1AShi8tLLzbPiPO6vDokf8ew-qBbzh5Pb/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/gXeFSST0xqy5XNgrbuEaa5BxvDM.jpg" alt="Birds of Prey">
+      <div class="card-title">Birds of Prey</div>
+    </a>
+
+    <!-- Black Panther -->
+    <div class="movie-card" onclick='openModal("Black Panther","https://media.themoviedb.org/t/p/w188_and_h282_face/uxzzxijgPIY7slzFvMotPv8wjKA.jpg",[["Black Panther","https://drive.google.com/file/d/1wdUOiz7tI3R5vTz779h7CesAW5h0kUh1/view"],["Black Panther: Wakanda Forever","https://drive.google.com/file/d/198qUcefIK54KnZzxAx6_L8u7l37oCfhK/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uxzzxijgPIY7slzFvMotPv8wjKA.jpg" alt="Black Panther">
+      <div class="card-title">Black Panther</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- The Black Phone -->
+    <div class="movie-card" onclick='openModal("The Black Phone","https://media.themoviedb.org/t/p/w188_and_h282_face/p9ZUzCyy9wRTDuuQexkQ78R2BgF.jpg",[["The Black Phone","https://drive.google.com/file/d/140S8bCV6Ht2WticzegM_jfRayS2_Mvn_/view?usp=sharing"],["The Black Phone 2","https://drive.google.com/file/d/1Nnkb35gi9f-jc4LvwVDUq8MTLur7mK3L/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/p9ZUzCyy9wRTDuuQexkQ78R2BgF.jpg" alt="The Black Phone">
+      <div class="card-title">The Black Phone</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- The Blackening -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1VBG7WXqeiZ3BSvPuWUPCL1_iF9znvPI5/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/n2aS9FE0C3VUHtSb3Ak41aU9K3y.jpg" alt="The Blackening">
+      <div class="card-title">The Blackening</div>
+    </a>
+
+    <!-- Blue Beetle -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1T2XMXtDAlohPcGdi-u2p9zXF9Os9zkY1/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/mXLOHHc1Zeuwsl4xYKjKh2280oL.jpg" alt="Blue Beetle">
+      <div class="card-title">Blue Beetle</div>
+    </a>
+
+    <!-- The Book of Life -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1_MkoFWTqhvJM4YNqGFzSabwKSSL4fa55/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/aotTZos5KswgCryEzx2rlOjFsm1.jpg" alt="The Book of Life">
+      <div class="card-title">The Book of Life</div>
+    </a>
+
+    <!-- Boo! A Madea Halloween -->
+    <div class="movie-card" onclick='openModal("Boo! A Madea Halloween","https://media.themoviedb.org/t/p/w188_and_h282_face/82TLEZv1rOJNgllfYD22NkivGDH.jpg",[["Boo! A Madea Halloween","https://drive.google.com/file/d/1vBDYkMbS1WR0E5tOj0Tdou9S6HJ5Nb5w/view?usp=sharing"],["Boo 2! A Madea Halloween","https://drive.google.com/file/d/1p8PGU6RQya7wIRi5no4pPNOVRaBbnfwR/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/82TLEZv1rOJNgllfYD22NkivGDH.jpg" alt="Boo! A Madea Halloween">
+      <div class="card-title">Boo! A Madea Halloween</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- The Bride -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1xSofJ9d2rDIGNlGqiVPcYJgG00oSOS0b/view" target="_blank">
+      <img src="https://resizing.flixster.com/D6aLbOtCJdj4ItAJL_UgDI_lzzA=/206x305/v2/https://resizing.flixster.com/z6BFk7MTfmhxPbsNeGPWSOruG4k=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzLzQwNTljYWI5LWY2OWQtNGU0ZC05ZTFjLWE1ZjUxMmViNDdmYy5qcGc=" alt="The Bride">
+      <div class="card-title">The Bride</div>
+    </a>
+
+    <!-- The Boys -->
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1jikFQF1QGoto9Dr-DHpth6-ksFXLGA5b" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/in1R2dDc421JxsoRWaIIAqVI2KE.jpg" alt="The Boys">
+      <div class="card-title">The Boys</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- The Brady Bunch Movie -->
+    <a class="movie-card" href="https://drive.google.com/file/d/18i5j4gguKnfjNXVcfPKLz3GbxaiWbhrh/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/kbJfBJh5vEf5356Jlm6P37H48hD.jpg" alt="The Brady Bunch Movie">
+      <div class="card-title">The Brady Bunch Movie</div>
+    </a>
+
+    <!-- The Brave Little Toaster -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1qZxoOGQTxqwlJtOQbwN8jeyD_yVvX7yc/view?usp=share_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/mEZcPMNRqTcotOZSttN5MtmJbu1.jpg" alt="The Brave Little Toaster">
+      <div class="card-title">The Brave Little Toaster</div>
+    </a>
+
+    <!-- Breaking Bad -->
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1FnMjttr2xj9HZfypWbN4L8FlqJyz9LUs" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg" alt="Breaking Bad">
+      <div class="card-title">Breaking Bad</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- Bride of Chucky -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1bdeH-TLFYRBpC0sp3eIWNGocKlqPp5mw/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/yaIPNOcC7ZRuwH3maNwP9qzIo5G.jpg" alt="Bride of Chucky">
+      <div class="card-title">Bride of Chucky</div>
+    </a>
+
+    <!-- Bumblebee -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1wqi9Wk--koq0SqRkoVZWXLVJBtABkjPy/view?usp=share_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/fw02ONlDhrYjTSZV8XO6hhU3ds3.jpg" alt="Bumblebee">
+      <div class="card-title">Bumblebee</div>
+    </a>
+
+    <!-- Boyz n the Hood -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1fCv2dJuy8k_NQWAxbNRxqW0_zKetF-uy/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/v4ox4aSCNT5vyLXl4Q71JiWwCXW.jpg" alt="Boyz n the Hood">
+      <div class="card-title">Boyz n the Hood</div>
+    </a>
+
+    <!-- Camp Camp -->
+    <a class="movie-card" href="https://archive.org/details/camp-camp-s01-to-s04" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uXvv9aCOCJL8U8Zf4eSoWU5MgRE.jpg" alt="Camp Camp">
+      <div class="card-title">Camp Camp</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- Captain America: Civil War -->
+    <a class="movie-card" href="https://sites.google.com/view/ttbr-11-777-ggbht/moves/captain-america-civil-war" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/rAGiXaUfPzY7CDEyNKUofk3Kw2e.jpg" alt="Captain America: Civil War">
+      <div class="card-title">Captain America: Civil War</div>
+    </a>
+
+    <!-- Captain Underpants -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1BW7yv_y4uk99Nsjbc--z1beQ_bYYmUXk/view?usp=share_link" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/en/2/24/Captain_Underpants_The_First_Epic_Movie_poster.jpg" alt="Captain Underpants: The First Epic Movie">
+      <div class="card-title">Captain Underpants</div>
+    </a>
+
+    <!-- Cars -->
+    <div class="movie-card" onclick='openModal("Cars","https://media.themoviedb.org/t/p/w188_and_h282_face/2Touk3m5gzsqr1VsvxypdyHY5ci.jpg",[["Cars","https://drive.google.com/file/d/1RoWQ2LZecPYvsZ48Sah7_xBvZzEHcXL1/view?usp=drive_link"],["Cars 2","https://drive.google.com/file/d/1YinG1kmgSqWI5kQwfDsQO6vK1xzM6K7o/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/2Touk3m5gzsqr1VsvxypdyHY5ci.jpg" alt="Cars">
+      <div class="card-title">Cars</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Child's Play / Chucky -->
+    <div class="movie-card" onclick='openModal("Child\u0027s Play / Chucky","https://media.themoviedb.org/t/p/w188_and_h282_face/wvpgvcWNkF2HLuTEMIM7K83MvZ.jpg",[["Child\u0027s Play (1988)","https://drive.google.com/file/d/1FPO2K8Oqb1O3qm1qb57NhZHhaGCvQjAz/view?usp=sharing"],["Child\u0027s Play 2","https://drive.google.com/file/d/1NXrR22Ja1iaa3PcidheWe6dKmK80A2em/view?usp=drive_link"],["Child\u0027s Play 3","https://drive.google.com/file/d/1gEP2FcL30yLVaUw_J9As7Jum_rJPZlDt/view"],["Bride of Chucky","https://drive.google.com/file/d/1bdeH-TLFYRBpC0sp3eIWNGocKlqPp5mw/view?usp=drive_link"],["Seed of Chucky","https://drive.google.com/file/d/1ibotaqumpENLsX67ZGbKzZcAStYmezqs/view?usp=drive_link"],["Curse of Chucky","https://drive.google.com/file/d/1iREiS873cIR4Wq3nKV-uBwaJVWbqIZe0/view?usp=drive_link"],["Cult of Chucky","https://drive.google.com/file/d/1JHK4oNMMg_RLU-IfCRkIA6L-1T9BJEVd/view?usp=drive_link"],["Child\u0027s Play (2019)","https://drive.google.com/file/d/1D-j3sPp4-DQmHs_Ce9Nxya0GnyAmEAQM/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/wvpgvcWNkF2HLuTEMIM7K83MvZ.jpg" alt="Child's Play">
+      <div class="card-title">Child's Play / Chucky</div>
+      <div class="multi-badge">8 Films</div>
+    </div>
+
+    <!-- The Chronicles of Narnia -->
+    <div class="movie-card" onclick='openModal("The Chronicles of Narnia","https://media.themoviedb.org/t/p/w188_and_h282_face/pfAFIkQd9MD4KDxlElCVSNKwnaR.jpg",[["The Lion, the Witch and the Wardrobe","https://drive.google.com/file/d/14TYyfl0ogVnDyw_yKCrU_jKGPIDBM3Nu/view?usp=share_link"],["Prince Caspian","https://drive.google.com/file/d/1DxOEqY1EzxcJYSNk2s6xXLf2SSP-hTRI/view?usp=share_link"],["The Voyage of the Dawn Treader","https://drive.google.com/file/d/12_UK0B8umPhjw5c5WOge3PtcGoDB9Uk2/view?usp=share_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/pfAFIkQd9MD4KDxlElCVSNKwnaR.jpg" alt="The Chronicles of Narnia">
+      <div class="card-title">The Chronicles of Narnia</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Coco -->
+    <a class="movie-card" href="https://drive.google.com/file/d/194M4dGCwh1hTxVM1-_axnLSdt4trnbK2/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/6Ryitt95xrO8KXuqRGm1fUuNwqF.jpg" alt="Coco">
+      <div class="card-title">Coco</div>
+    </a>
+
+    <!-- The Conjuring -->
+    <div class="movie-card" onclick='openModal("The Conjuring","https://upload.wikimedia.org/wikipedia/en/8/8c/The_Conjuring_poster.jpg",[["The Conjuring (2013)","https://drive.google.com/file/d/17VPLw23bmvSYSa7C9fyiB9c3iXB09PNN/view"],["The Conjuring 2","https://drive.google.com/file/d/1zECVNreFAl8LNGcOrlPqtMzw_Su1S3AC/view"],["The Conjuring: The Devil Made Me Do It","https://drive.google.com/file/d/1k0tAH--aSS2Ik_xCwr9nJSr1XAS0cFH6/view"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/8/8c/The_Conjuring_poster.jpg" alt="The Conjuring">
+      <div class="card-title">The Conjuring</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Coraline -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1TFiL16cNmQmG5pSi-s6od4xgymFqK1kJ/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/4jeFXQYytChdZYE9JYO7Un87IlW.jpg" alt="Coraline">
+      <div class="card-title">Coraline</div>
+    </a>
+
+    <!-- Corpse Bride -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1AHqrYm4cItyiEquPHJV5z3H81Cc0cCfI/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/isb2Qow76GpqYmsSyfdMfsYAjts.jpg" alt="Corpse Bride">
+      <div class="card-title">Corpse Bride</div>
+    </a>
+
+    <!-- Creed -->
+    <div class="movie-card" onclick='openModal("Creed","https://media.themoviedb.org/t/p/w188_and_h282_face/1BfTsk5VWuw8FCocAhCyqnRbEzq.jpg",[["Creed","https://drive.google.com/file/d/1w9nVBGOKDax-xCr-caqekW4hcjRUQWZA/view?usp=drive_link"],["Creed 2","https://drive.google.com/file/d/1KnW-KW6LV-fH0S0R_2sbsEKkKhSFK-OP/view"],["Creed 3","https://drive.google.com/file/d/1j8pGyNx9PHk_Gicns9JlDaX82qBIi1_m/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/1BfTsk5VWuw8FCocAhCyqnRbEzq.jpg" alt="Creed">
+      <div class="card-title">Creed</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Deadpool -->
+    <div class="movie-card" onclick='openModal("Deadpool","https://media.themoviedb.org/t/p/w188_and_h282_face/3E53WEZJqP6aM84D8CckXx4pIHw.jpg",[["Deadpool","https://drive.google.com/file/d/1XUjU4fhDH7qpPEg_me8vlMba1uelRIwj/view?usp=gmail"],["Deadpool 2","https://drive.google.com/file/d/1wcE3D19t54BnWtLNl5cruklfPVPh92nY/view?usp=gmail"],["Deadpool & Wolverine","https://drive.google.com/file/d/1B_eiKUt7N5OxyUN9c37LG0pxcErP4yJ6/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/3E53WEZJqP6aM84D8CckXx4pIHw.jpg" alt="Deadpool">
+      <div class="card-title">Deadpool</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Descendants: The Rise of Red -->
+    <a class="movie-card" href="https://drive.google.com/file/d/14uIYHn4xepm1GLF2USxyBkUE6nQfueoE/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/8fYluTtB3b3HKO7KQa5tzrvGaps.jpg" alt="Descendants: The Rise of Red">
+      <div class="card-title">Descendants: The Rise of Red</div>
+    </a>
+
+    <!-- Despicable Me -->
+    <div class="movie-card" onclick='openModal("Despicable Me","https://media.themoviedb.org/t/p/w188_and_h282_face/b1BT309QWjtFUlJPLmXmrcHOWEL.jpg",[["Despicable Me","https://drive.google.com/file/d/1upRWBqPKcQjviBjAgYkzkWZuVjQ1SAWF/view"],["Despicable Me 2","https://drive.google.com/file/d/1eoQmOkUsxF0UwnQ0of-kmAlMMEhnKuzW/view?usp=sharing"],["Despicable Me 3","https://drive.google.com/file/d/1O9r7jbQZEgf58oKsOfI34z30XwRF_CI4/view?usp=sharing"],["Despicable Me 4","https://drive.google.com/drive/u/1/folders/1uYDCxC1EW9qV-87EiMzWkVuxCz1JLgUj"],["Minions","https://drive.google.com/file/d/1Wz1VPwDHWA3t8n54e-YpRM18ad1mQuSG/view?usp=share_link"],["Minions: Rise of Gru","https://drive.google.com/file/d/1lrJNkBON3H_5n8lF3WKCaUT6AUl9qbh4/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/b1BT309QWjtFUlJPLmXmrcHOWEL.jpg" alt="Despicable Me">
+      <div class="card-title">Despicable Me</div>
+      <div class="multi-badge">6 Films</div>
+    </div>
+
+    <!-- Detective Pikachu -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1q5wcbuy536XQKTBAF7ImApMAlNMVHM5T/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uhWvnFgg3BNlcUz0Re1HfQqIcCD.jpg" alt="Pokémon: Detective Pikachu">
+      <div class="card-title">Pokémon: Detective Pikachu</div>
+    </a>
+
+    <!-- Diary of a Wimpy Kid -->
+    <div class="movie-card" onclick='openModal("Diary of a Wimpy Kid","https://media.themoviedb.org/t/p/w188_and_h282_face/w77ZoDmHNf6lnk8NWsXqWYOQqnp.jpg",[["Rodrick Rules","https://drive.google.com/file/d/1rKRsgdNioFs3rtkZai7Gz97FtAX0jdJ_/view"],["Dog Days","https://drive.google.com/file/d/0B6fv-OkwXRTzZ090UHlWcHY2dkk/view?usp=drivesdk&resourcekey=0-TgoMzBEyMorySYhDqB9uGA"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/w77ZoDmHNf6lnk8NWsXqWYOQqnp.jpg" alt="Diary of a Wimpy Kid">
+      <div class="card-title">Diary of a Wimpy Kid</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Dungeons & Dragons: Honor Among Thieves -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1iX6QbaV3Oi_yGDvqRcFvrJ4_gzIOisnT/view" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/en/0/03/Theatrical_poster_for_Dungeons_and_Dragons%2C_Honor_Among_Thieves.jpg" alt="Dungeons & Dragons: Honor Among Thieves">
+      <div class="card-title">Dungeons &amp; Dragons: Honor Among Thieves</div>
+    </a>
+
+    <!-- Dune: Part Two -->
+    <a class="movie-card" href="https://drive.google.com/file/d/14VeNSqVtt5gcibZOfjPcjkBoasPrpiEG/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg" alt="Dune: Part Two">
+      <div class="card-title">Dune: Part Two</div>
+    </a>
+
+    <!-- Elf -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1-cJP_6uvuboesHkiYPgfIg49eKvsBsF0/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/oOleziEempUPu96jkGs0Pj6tKxj.jpg" alt="Elf">
+      <div class="card-title">Elf</div>
+    </a>
+
+    <!-- Evil Dead -->
+    <div class="movie-card" onclick='openModal("Evil Dead","https://media.themoviedb.org/t/p/w188_and_h282_face/54C1qdaiSijIU5NeNb4WsPJdNkG.jpg",[["Evil Dead","https://drive.google.com/file/d/1E2Epz2Y7Ji5xCnKT0RtqMz7r0ENBT4YB/view?usp=drivesdk"],["Evil Dead 2","https://drive.google.com/file/d/1BklK_O-rTRNrk0q7xOhXt_LEiBmmYan8/view?usp=drivesdk"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/54C1qdaiSijIU5NeNb4WsPJdNkG.jpg" alt="Evil Dead">
+      <div class="card-title">Evil Dead</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Finding Nemo -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1jP7PoHapLf_S_n75Afdc0RvzSwRqPcwm/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/eHuGQ10FUzK1mdOY69wF5pGgEf5.jpg" alt="Finding Nemo">
+      <div class="card-title">Finding Nemo</div>
+    </a>
+
+    <!-- Frankenstein -->
+    <div class="movie-card" onclick='openModal("Frankenstein","https://resizing.flixster.com/D6aLbOtCJdj4ItAJL_UgDI_lzzA=/206x305/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p32143260_v_v12_aa.jpg",[["Frankenstein&apos;s Bride","https://drive.google.com/file/d/1yF3yrdhJ1LM3sMFyvjiMXqxBM1y05llK/view"],["Frankenstein 2025","https://drive.google.com/file/d/1E78ETKieIUSm9-oGon7lq3NxOy94MGqd/view"]])'>
+      <img src="https://resizing.flixster.com/D6aLbOtCJdj4ItAJL_UgDI_lzzA=/206x305/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p32143260_v_v12_aa.jpg" alt="Frankenstein">
+      <div class="card-title">Frankenstein</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- The Flash -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1ApUHMkZM-j3vM-rSG-kvjk3KuvJNAsXp/view?usp=sharing" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/en/e/ed/The_Flash_%28film%29_poster.jpg" alt="The Flash">
+      <div class="card-title">The Flash</div>
+    </a>
+
+    <!-- Five Nights at Freddy's -->
+    <div class="movie-card" onclick='openModal("Five Nights at Freddy\u0027s","https://media.themoviedb.org/t/p/w188_and_h282_face/7BpNtNfxuocYEVREzVMO75hso1l.jpg",[["Five Nights at Freddy\u0027s","https://drive.google.com/file/d/1TP307H3VaMznYmG5GDP08hByFMSvQ576/view?usp=sharing"],["Five Nights at Freddy\u0027s 2","https://drive.google.com/file/d/1sJKwqO53RZFCVr32rNHeG-Z9cCxOm2ps/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/7BpNtNfxuocYEVREzVMO75hso1l.jpg" alt="Five Nights at Freddy's">
+      <div class="card-title">Five Nights at Freddy's</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Free Guy -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1EupGpY5FUCfaHtBUeSpf5PilmLHbjImJ/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/dxraF0qPr1OEgJk17ltQTO84kQF.jpg" alt="Free Guy">
+      <div class="card-title">Free Guy</div>
+    </a>
+
+    <!-- Freddy vs. Jason -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1njTri-d6eamwa3AFwuVD9nORZ7K6-D-N/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/f9ZASRUfl8Jlco7rgRx3ujPR0P7.jpg" alt="Freddy vs. Jason">
+      <div class="card-title">Freddy vs. Jason</div>
+    </a>
+
+    <!-- Friday -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1SKE9sQ-DnHRRVGxU10Qk2QJ1Ws2jvv5M/view?usp=share_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/2lReF53F8trkC68piGSfk0JVwWU.jpg" alt="Friday">
+      <div class="card-title">Friday</div>
+    </a>
+
+    <!-- Friday the 13th -->
+    <div class="movie-card" onclick='openModal("Friday the 13th","https://upload.wikimedia.org/wikipedia/en/2/2c/Friday_the_13th_%281980%29_theatrical_poster.jpg",[["Friday the 13th","https://drive.google.com/file/d/1Tu0WxRUC-gADzYFEnSvudZ3MZ7Y735jH/view?usp=drive_link"],["Friday the 13th Part 2","https://drive.google.com/file/d/1ROenMVwRyMGW0EIsf4Xg67EvRAAT5kcX/view?usp=drive_link"],["Friday the 13th Part 3","https://drive.google.com/file/d/1Ak82TmSBG3_lpbUgsDq22AcZ5gzGvTTB/view?usp=drive_link"],["Friday the 13th: The Final Chapter","https://drive.google.com/file/d/1M2OD-EPO3AjkzwYNvJLXCNe4B7y6bmM6/view?usp=drive_link"],["Friday the 13th Part V","https://drive.google.com/file/d/1cB43qNpCCf90tHch87EC4hBywV0Ao5-V/view?usp=drive_link"],["Friday the 13th Part VI: Jason Lives","https://drive.google.com/file/d/1Yug3RMr7f8z5P7TjxWgRN0geoWL7UnU4/view?usp=drive_link"],["Friday the 13th Part VII: The New Blood","https://drive.google.com/file/d/1CG5Te-vXcvPrEuJtQsN3HZigm6bz33Os/view?usp=drive_link"],["Friday the 13th Part VIII: Jason Takes Manhattan","https://drive.google.com/file/d/1oRePBRxnrhk8feVEE3OtTNnE0Y70a4ZN/view?usp=drive_link"],["Jason X","https://drive.google.com/file/d/1f_m_NTsYbbVFh1FBqXC1TOuS_4Yp6uSd/view?usp=drive_link"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/2/2c/Friday_the_13th_%281980%29_theatrical_poster.jpg" alt="Friday the 13th">
+      <div class="card-title">Friday the 13th</div>
+      <div class="multi-badge">9 Films</div>
+    </div>
+
+    <!-- Frozen -->
+    <div class="movie-card" onclick='openModal("Frozen","https://media.themoviedb.org/t/p/w188_and_h282_face/itAKcobTYGpYT8Phwjd8c9hleTo.jpg",[["Frozen","https://drive.google.com/file/d/1XIuN4Zp35mW0iN4p0ME5APxH18-6Zqft/view?usp=drive_link"],["Frozen 2","https://drive.google.com/file/d/1hpUpKEdeT9ta-8FjSpMUAXw17E-8uwIY/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/itAKcobTYGpYT8Phwjd8c9hleTo.jpg" alt="Frozen">
+      <div class="card-title">Frozen</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Garfield -->
+    <div class="movie-card" onclick='openModal("Garfield","https://upload.wikimedia.org/wikipedia/en/9/91/The_Garfield_Movie_2024_poster.jpg",[["Garfield (2004)","https://drive.google.com/file/d/1xMRDhscsmtcrECXXuOsqpAADTHJ0FxGS/view"],["The Garfield Movie (2024)","https://drive.google.com/file/d/1g_YZyeIbjua21PNL4ZLfeIzJx-givpPE/view?usp=sharing"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/9/91/The_Garfield_Movie_2024_poster.jpg" alt="Garfield">
+      <div class="card-title">Garfield</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Ghostbusters -->
+    <div class="movie-card" onclick='openModal("Ghostbusters","https://media.themoviedb.org/t/p/w188_and_h282_face/7E8nLijS9AwwUEPu2oFYOVKhdFA.jpg",[["Ghostbusters","https://drive.google.com/file/d/1Kur_TXv1AOx8hhs0qGc_IwZXKmWvD6Y7/view"],["Ghostbusters 2","https://drive.google.com/file/d/1VPN-P5xWjbEHv-VtlzjryjyV-nx7Z_w_/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/7E8nLijS9AwwUEPu2oFYOVKhdFA.jpg" alt="Ghostbusters">
+      <div class="card-title">Ghostbusters</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Godzilla -->
+    <div class="movie-card" onclick='openModal("Godzilla","https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Gojira_1954_Japanese_poster.jpg/500px-Gojira_1954_Japanese_poster.jpg",[["Godzilla (1954)","https://drive.google.com/file/d/1pP6Kkr-1WmcWWt2IKEIUv7RTkgMLXTmp/view"],["Godzilla: Final Wars","https://drive.google.com/file/d/1rin01fF2JeTiqBkvae2SJLZIuv2UUp2v/view"],["Godzilla Minus One","https://drive.google.com/file/d/15cslPKo6esN4D6oaMaRjcC3_eIwFDX4e/view"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Gojira_1954_Japanese_poster.jpg/500px-Gojira_1954_Japanese_poster.jpg" alt="Godzilla">
+      <div class="card-title">Godzilla</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Good Burger -->
+    <div class="movie-card" onclick='openModal("Good Burger","https://media.themoviedb.org/t/p/w188_and_h282_face/imFLUF2TYkm13GpFYTKYF7T27sP.jpg",[["Good Burger","https://drive.google.com/file/d/1jucPocCb8aq23Bh-GFLcniAk-k5UU-wC/view"],["Good Burger 2","https://drive.google.com/file/d/1TOjPbqSF5UqnPrn1zFqEWvkUeBNiyMax/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/imFLUF2TYkm13GpFYTKYF7T27sP.jpg" alt="Good Burger">
+      <div class="card-title">Good Burger</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- The Good Dinosaur -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1vELzmz9u6vQ18YtMipK9nSWJhZLP6KaH/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/8RSkxOO80btfKjyiC5ZiTaCHIT8.jpg" alt="The Good Dinosaur">
+      <div class="card-title">The Good Dinosaur</div>
+    </a>
+
+    <!-- Gran Turismo -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1YnnYFC1P_MwgxavCoYtMvHOr_PoZAFNd/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/51tqzRtKMMZEYUpSYkrUE7v9ehm.jpg" alt="Gran Turismo">
+      <div class="card-title">Gran Turismo</div>
+    </a>
+
+    <!-- Grease -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1W77S931ShuhZ2RVeiNrfdQQUcR4pKsD0/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/2rM7fQKpb7cs1Iq7IBqub9LFDzJ.jpg" alt="Grease">
+      <div class="card-title">Grease</div>
+    </a>
+
+    <!-- The Greatest Showman -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1ErElLX4tetXsqWfpivPg3JlEht4ERibn/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/b9CeobiihCx1uG1tpw8hXmpi7nm.jpg" alt="The Greatest Showman">
+      <div class="card-title">The Greatest Showman</div>
+    </a>
+
+    <!-- The Green Mile -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1-9U1iauG9UWcye8KkkNhxPEL-82u6eds/view?usp=drivesdk" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/8VG8fDNiy50H4FedGwdSVUPoaJe.jpg" alt="The Green Mile">
+      <div class="card-title">The Green Mile</div>
+    </a>
+
+    <!-- Guardians of the Galaxy Vol. 3 -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1pFavPs7Mi9rx_BrAjxbeHNWg7ClAB2_K/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/r2J02Z2OpNTctfOSN1Ydgii51I3.jpg" alt="Guardians of the Galaxy Vol. 3">
+      <div class="card-title">Guardians of the Galaxy Vol. 3</div>
+    </a>
+
+    <!-- Hairspray -->
+    <a class="movie-card" href="https://drive.google.com/file/d/12X1rfnx0NrQUAhDRLRQxKdaqvAi_LqJa/view?usp=sharing" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/en/5/5c/Hairspray2007poster.JPG" alt="Hairspray">
+      <div class="card-title">Hairspray</div>
+    </a>
+
+    <!-- Halloween -->
+    <div class="movie-card" onclick='openModal("Halloween","https://upload.wikimedia.org/wikipedia/en/1/1b/Halloween_II_%281981%29_theatrical_poster.jpg",[["Halloween II (1981)","https://drive.google.com/file/d/1m32R5sqZJ7asq_oPOCusPYCFB68fuWW4/view"],["Halloween III: Season of the Witch","https://drive.google.com/file/d/19iJrizksrAZfszCgGXDHqkopFg5hpXZD/view"],["Halloween 6: The Curse of Michael Myers","https://drive.google.com/file/d/1apo3DtYMCxv-1F917g7hkTYUhRRTY3zJ/view"],["Halloween (2007)","https://drive.google.com/file/d/1oy9kIOC9bY3U217MWxlac9EDLQmcpFBh/view"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/1/1b/Halloween_II_%281981%29_theatrical_poster.jpg" alt="Halloween">
+      <div class="card-title">Halloween</div>
+      <div class="multi-badge">4 Films</div>
+    </div>
+
+    <!-- Hamilton -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1c47Nko9vdJfe-KKF4nkpd-U-aMT_ZaQe/view?usp=sharing" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/en/c/c3/Hamilton_Disney%2B_poster_2020.jpg" alt="Hamilton">
+      <div class="card-title">Hamilton</div>
+    </a>
+
+    <!-- Harry Potter -->
+    <div class="movie-card" onclick='openModal("Harry Potter","https://media.themoviedb.org/t/p/w188_and_h282_face/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg",[["Sorcerer\u0027s Stone","https://drive.google.com/file/d/1bJMKhvzwuVfAYECLheyA_h38T9oYvkgX/view?usp=drive_link"],["Chamber of Secrets","https://drive.google.com/file/d/1AC6j5pNVDl6fcvdT3e3hsAUkkBU-o3xD/view?usp=drive_link"],["Prisoner of Azkaban","https://drive.google.com/file/d/1Zu15ykGtc1xxKIKfAeUV_L1vAbCt--zO/view?usp=drive_link"],["Goblet of Fire","https://drive.google.com/file/d/1yYxqmSv99zFBsJkT0cZYd4C4PTNC9bUU/view?usp=drive_link"],["Order of the Phoenix","https://drive.google.com/file/d/1eVK_s8Sp-Gvv1J65ocyLbwyqC7vkuoFK/view?usp=drive_link"],["Half-Blood Prince","https://drive.google.com/file/d/1QfAnvJtU3oR7IV2CrN2qRx4vFThjbbe1/view?usp=drive_link"],["Deathly Hallows Part 1","https://drive.google.com/file/d/17UlhT2qVX10O8AksEEdWuaUqoVF78-oH/view?usp=drive_link"],["Deathly Hallows Part 2","https://drive.google.com/file/d/16jXkeJny6L8MrC_7issz4AtANAzNDJqw/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/wuMc08IPKEatf9rnMNXvIDxqP4W.jpg" alt="Harry Potter">
+      <div class="card-title">Harry Potter</div>
+      <div class="multi-badge">8 Films</div>
+    </div>
+
+    <!-- Hercules -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1sXad7VvXVn7qIilwdspq5RtjmInpa7mQ/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/beKLNtsDRR6EmNCKp7KOTdztL4j.jpg" alt="Hercules">
+      <div class="card-title">Hercules</div>
+    </a>
+
+    <!-- Hidden Figures -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1sfjv_SEQZQ4QPgPAeS8xckKHORr3gLiG/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/9lfz2W2uGjyow3am00rsPJ8iOyq.jpg" alt="Hidden Figures">
+      <div class="card-title">Hidden Figures</div>
+    </a>
+
+    <!-- High School Musical -->
+    <div class="movie-card" onclick='openModal("High School Musical","https://upload.wikimedia.org/wikipedia/en/a/a5/HSMposter.jpg",[["High School Musical","https://drive.google.com/file/d/1tg84YPuUqFUMlVpGzjkhoEehBHV8W9ZF/view?usp=drive_link"],["High School Musical 2","https://drive.google.com/file/d/1iE1foAQrNAMJJg3aOd37GECWBkXmAEi7/view?usp=share_link"],["High School Musical 3","https://drive.google.com/file/d/1aGq7saEhWkyACQlOmGIAmylSTeEOL864/view?usp=share_link"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/a/a5/HSMposter.jpg" alt="High School Musical">
+      <div class="card-title">High School Musical</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Home Alone -->
+    <div class="movie-card" onclick='openModal("Home Alone","https://media.themoviedb.org/t/p/w188_and_h282_face/onTSipZ8R3bliBdKfPtsDuHTdlL.jpg",[["Home Alone","https://drive.google.com/file/d/1l7dSSnBmw9Fnku5lxl7zYk7CsQa4JU3d/view?usp=sharing"],["Home Alone 2","https://drive.google.com/file/d/1sH3RXs-OiYr7ROKCtmB5miWVpX9G2b4Q/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/onTSipZ8R3bliBdKfPtsDuHTdlL.jpg" alt="Home Alone">
+      <div class="card-title">Home Alone</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Hotel Transylvania -->
+    <div class="movie-card" onclick='openModal("Hotel Transylvania","https://media.themoviedb.org/t/p/w188_and_h282_face/eJGvzGrsfe2sqTUPv5IwLWXjVuR.jpg",[["Hotel Transylvania","https://drive.google.com/file/d/1gZ4FVX5GLCSv2-i_sabXWhgl9u_3FeOB/view"],["Hotel Transylvania 2","https://drive.google.com/file/d/1LZI5E52J_R_Cx6f3EXLl-BAn6vuhUduD/view"],["Hotel Transylvania 3","https://drive.google.com/file/d/1aS3rHee1w5zNTGGmSFM57DSVlC1hSvIs/view"],["Hotel Transylvania 4","https://drive.google.com/file/d/1_Ujbv8ONdcmV8TrYw8WzTwdD93deiiZp/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/eJGvzGrsfe2sqTUPv5IwLWXjVuR.jpg" alt="Hotel Transylvania">
+      <div class="card-title">Hotel Transylvania</div>
+      <div class="multi-badge">4 Films</div>
+    </div>
+
+    <!-- The House with a Clock in Its Walls -->
+    <a class="movie-card" href="https://drive.google.com/file/d/18jZoJEwkjPPDp3OPD-fevwoyl_1g6EpO/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/qM66Hv4ByAxnilr0jaqCA9uOD4Y.jpg" alt="The House with a Clock in Its Walls">
+      <div class="card-title">The House with a Clock in Its Walls</div>
+    </a>
+
+    <!-- I Know What You Did Last Summer -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1sSPtR3lcvTcjtDHvv3sOHw8qHbuaeQY1/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/dQyaJx0SptDqvQcAewAr8FAtLB2.jpg" alt="I Know What You Did Last Summer">
+      <div class="card-title">I Know What You Did Last Summer</div>
+    </a>
+
+    <!-- Iron Lung -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1x5AAIcDcYIqTRw14fQoLjYvBjixpfWNO/view" target="_blank">
+      <img src="https://resizing.flixster.com/o8qPkUJ0JDsYQtxbtmvDbZtt8NU=/206x305/v2/https://resizing.flixster.com/x14gp8mqqj3lta3M-Gjl2ml1m0E=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzLzc4MzM2YzBlLTNlZWItNGZmNy1hZWNlLWZiY2ZhZGFhZDY2My5qcGc=" alt="Iron Lung">
+      <div class="card-title">Iron Lung</div>
+    </a>
+
+    <!-- The Incredibles -->
+    <div class="movie-card" onclick='openModal("The Incredibles","https://upload.wikimedia.org/wikipedia/en/2/27/The_Incredibles_%282004_animated_feature_film%29.jpg",[["The Incredibles","https://drive.google.com/file/d/1XZrELbZbBqHShrCiPr4I4_pmOeT_gvwY/view?authuser=0&usp=share_link"],["Incredibles 2","https://drive.google.com/file/d/1XZ0pSe4bccOpJeF_VkXhkOhxQ3Tzp8RB/view"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/2/27/The_Incredibles_%282004_animated_feature_film%29.jpg" alt="The Incredibles">
+      <div class="card-title">The Incredibles</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Indiana Jones and the Dial of Destiny -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1BuNmXFmhFBoSKvcnbi5W1_hQkVLTrzwu/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/Af4bXE63pVsb2FtbW8uYIyPBadD.jpg" alt="Indiana Jones and the Dial of Destiny">
+      <div class="card-title">Indiana Jones and the Dial of Destiny</div>
+    </a>
+
+    <!-- Inside Out -->
+    <div class="movie-card" onclick='openModal("Inside Out","https://media.themoviedb.org/t/p/w188_and_h282_face/2H1TmgdfNtsKlU9jKdeNyYL5y8T.jpg",[["Inside Out","https://drive.google.com/file/d/1BEPGPg_iR7L5QFJ91SizjlA6khwj6j1e/view?usp=sharing"],["Inside Out 2","https://drive.google.com/file/d/148ae2JtLzIZwy-AKjtRgLZPNf3vEmQOE/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/2H1TmgdfNtsKlU9jKdeNyYL5y8T.jpg" alt="Inside Out">
+      <div class="card-title">Inside Out</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- The Instigators -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1LPBpsJpE56zpdSZUi8f6tEkHPzaMceYo/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/dnYWsIFDmygCjNg65rY3uBymx81.jpg" alt="The Instigators">
+      <div class="card-title">The Instigators</div>
+    </a>
+
+    <!-- IT: Welcome to Derry -->
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1UABFLoCQG6DEdQkJwbbUPqYulGLsSiw2?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/nyy3BITeIjviv6PFIXtqvc8i6xi.jpg" alt="IT: Welcome to Derry">
+      <div class="card-title">IT: Welcome to Derry</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- Jason Goes to Hell -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1mvOr1kr0lX3XzbYIVJps-Mkz7UxjLUhP/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/1J7zudfR3VLPwAf9lK5YPfSu0n6.jpg" alt="Jason Goes to Hell: The Final Friday">
+      <div class="card-title">Jason Goes to Hell</div>
+    </a>
+
+    <!-- Jason X -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1f_m_NTsYbbVFh1FBqXC1TOuS_4Yp6uSd/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/ggOND0hfoE0f3K857joSzEeIchb.jpg" alt="Jason X">
+      <div class="card-title">Jason X</div>
+    </a>
+
+    <!-- Jingle All the Way -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1gdQba6i5IcBe7_a4eyU75cuAkbyJEpt4/view?usp=share_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/lHLOUt0ZIQLC5asHdIQBoTUvaEp.jpg" alt="Jingle All the Way">
+      <div class="card-title">Jingle All the Way</div>
+    </a>
+
+    <!-- John Wick -->
+    <div class="movie-card" onclick='openModal("John Wick","https://media.themoviedb.org/t/p/w188_and_h282_face/wXqWR7dHncNRbxoEGybEy7QTe9h.jpg",[["John Wick","https://drive.google.com/file/d/1o-u405CtHzkRFAjDRxnlwIV1MKzmpQYa/view"],["John Wick: Chapter 2","https://drive.google.com/file/d/1gzsZEVTNEb93tSa0nuzlpR2n20D4Dyx9/view"],["John Wick: Chapter 3 - Parabellum","https://drive.google.com/file/d/1CsIZrKGXn557DdOJrdz5ty7nkg0i4CWR/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/wXqWR7dHncNRbxoEGybEy7QTe9h.jpg" alt="John Wick">
+      <div class="card-title">John Wick</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Joker -->
+    <div class="movie-card" onclick='openModal("Joker","https://media.themoviedb.org/t/p/w188_and_h282_face/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg",[["Joker","https://drive.google.com/file/d/1czY5u0zA3TPQh97OFth_1GkaK9nUo-Lq/view?usp=drive_link"],["Joker: Folie \u00e0 Deux","https://drive.google.com/file/d/1wiipkIcZ8r4itPij4w7CpOvC6uz-2wCS/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg" alt="Joker">
+      <div class="card-title">Joker</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Jumanji -->
+    <div class="movie-card" onclick='openModal("Jumanji","https://media.themoviedb.org/t/p/w188_and_h282_face/2s0v5wRdbJGBMrLHxr9WB2rPUJI.jpg",[["Jumanji (1995)","https://drive.google.com/file/d/1tXnq5Vy82ADqguaPVxH586h3IR5x6vEZ/view?usp=drive_link"],["Jumanji: Welcome to the Jungle","https://drive.google.com/file/d/1KownBUZELkJDdp-Rbg8Z4YI7n1msEWbD/view?usp=drive_link"],["Jumanji: The Next Level","https://drive.google.com/file/d/1aM4O7Zp59daNOwMVW7jvHYUCLEwAXjI_/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/2s0v5wRdbJGBMrLHxr9WB2rPUJI.jpg" alt="Jumanji">
+      <div class="card-title">Jumanji</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Jurassic Park -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1QGXy2lJU4B0z4s7zPSOLizN8jMHfnZQm/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/maFjKnJ62hDQ9E66dKqDZgbUy0H.jpg" alt="Jurassic Park">
+      <div class="card-title">Jurassic Park</div>
+    </a>
+
+    <!-- The Karate Kid -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1tMJAooF8bG9ghav9CU4GPYF3t07ySMXL/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/1mp4ViklKvA0WXXsNvNx0RBuiit.jpg" alt="The Karate Kid">
+      <div class="card-title">The Karate Kid</div>
+    </a>
+
+    <!-- Kill Bill -->
+    <div class="movie-card" onclick='openModal("Kill Bill","https://resizing.flixster.com/KTBsyYZda_-KQmAtLGXuRcR0FRU=/fit-in/80x126/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p32988_p_v8_aa.jpg",[["Kill Bill: Volume 1","https://drive.google.com/drive/folders/15caY7ohh1fTIcvEUBrYY9w1g3TJvVYKN"],["Kill Bill: Volume 2","https://drive.google.com/drive/folders/15caY7ohh1fTIcvEUBrYY9w1g3TJvVYKN"]])'>
+      <img src="https://resizing.flixster.com/KTBsyYZda_-KQmAtLGXuRcR0FRU=/fit-in/80x126/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p32988_p_v8_aa.jpg" alt="Kill Bill">
+      <div class="card-title">Kill Bill</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- K-Pop Demon Hunters -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1GEdn_mwI54q0CVU2A-iahOHkFgk-mys3/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/zT7Lhw3BhJbMkRqm9Zlx2YGMsY0.jpg" alt="K-Pop Demon Hunters">
+      <div class="card-title">K-Pop Demon Hunters</div>
+    </a>
+
+    <!-- Kung Fu Panda -->
+    <div class="movie-card" onclick='openModal("Kung Fu Panda","https://media.themoviedb.org/t/p/w188_and_h282_face/wWt4JYXTg5Wr3xBW2phBrMKgp3x.jpg",[["Kung Fu Panda","https://drive.google.com/file/d/1cPYsXfP2YqdtUNnqXg3ycANRQQOuVOmR/view"],["Kung Fu Panda 2","https://drive.google.com/file/d/19Iz7pU-A9RUMHe6q1I9faYi02ht5MwbT/view"],["Kung Fu Panda 3","https://drive.google.com/file/d/1lfSnf9FQoB1xyeDJxEEh5JSG4ocnmqgx/view"],["Kung Fu Panda 4","https://drive.google.com/file/d/19e3HaItYsMHMCjHE0HD78-GsG1rbftJl/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/wWt4JYXTg5Wr3xBW2phBrMKgp3x.jpg" alt="Kung Fu Panda">
+      <div class="card-title">Kung Fu Panda</div>
+      <div class="multi-badge">4 Films</div>
+    </div>
+
+    <!-- Labyrinth -->
+    <a class="movie-card" href="https://drive.google.com/file/d/13TgTB15A99LLWI_ROcci18FT8ijuq8RC/view?usp=drivesdk" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/hbSdA1DmNA9IlfVoqJkIWYF2oYm.jpg" alt="Labyrinth">
+      <div class="card-title">Labyrinth</div>
+    </a>
+
+    <!-- Lego Jurassic Movie -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1KaW5Mzc7eqOPv0OSz_-Wntp7tqkEWi4J/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/w1i8pXw9NtQqxFWdOg2dU3imgnD.jpg" alt="Lego Jurassic Movie">
+      <div class="card-title">Lego Jurassic Movie</div>
+    </a>
+
+    <!-- The Lego Movies -->
+    <div class="movie-card" onclick='openModal("The Lego Movies","https://media.themoviedb.org/t/p/w188_and_h282_face/lbctonEnewCYZ4FYoTZhs8cidAl.jpg",[["The Lego Movie","https://drive.google.com/file/d/1j2kFu1apjVp0E2_xojdiqASlQOc8RBit/view"],["The Lego Batman Movie","https://drive.google.com/file/d/1Xn4F4GNvfKOljko2ZE_JUQcBWIHhO0ql/view"],["The Lego Ninjago Movie","https://drive.google.com/file/d/1wQIj-ZVsTxgTktceYFgyFei_XX-eXAt-/view?usp=sharing"],["The Lego Movie 2","https://drive.google.com/file/d/1_sb4Ogn-0xQX3Znf21COpLMrfs_x6Nuv/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/lbctonEnewCYZ4FYoTZhs8cidAl.jpg" alt="The Lego Movies">
+      <div class="card-title">The Lego Movies</div>
+      <div class="multi-badge">4 Films</div>
+    </div>
+
+    <!-- Leprechaun -->
+    <div class="movie-card" onclick='openModal("Leprechaun","https://upload.wikimedia.org/wikipedia/en/b/b2/Leprechaunposter.jpg",[["Leprechaun (1993)","https://drive.google.com/file/d/1pktrP3sKl90GQnM6wpRmxqlxgkv4sYaP/view?usp=drivesdk"],["Leprechaun 2 (1994)","https://drive.google.com/file/d/1gVMT8Aad2F51JdRYkjwkTw7tH88zgZxg/view?usp=drivesdk"],["Leprechaun 3 (1995)","https://drive.google.com/file/d/1Tzy2eFt1almlNxZkXfiOVvA-hkGLCvch/view?usp=drivesdk"],["Leprechaun 4 (1997)","https://drive.google.com/file/d/153R-JCEBqmgs3WrcHkEabTynjwa0Ryxs/view?usp=drivesdk"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/b/b2/Leprechaunposter.jpg" alt="Leprechaun">
+      <div class="card-title">Leprechaun</div>
+      <div class="multi-badge">4 Films</div>
+    </div>
+
+    <!-- The Lion King -->
+    <div class="movie-card" onclick='openModal("The Lion King","https://media.themoviedb.org/t/p/w188_and_h282_face/sKCr78MXSLixwmZ8DyJLrpMsd15.jpg",[["The Lion King","https://drive.google.com/file/d/1GrJxp4D9XrmYBG_bqRgp1UvQaapyjoV7/view"],["The Lion King II: Simba\u0027s Pride","https://drive.google.com/file/d/1-sT4cdDqG6tt4wI0ba7Z3FhDoX8ded8L/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/sKCr78MXSLixwmZ8DyJLrpMsd15.jpg" alt="The Lion King">
+      <div class="card-title">The Lion King</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- The Little Mermaid -->
+    <div class="movie-card" onclick='openModal("The Little Mermaid","https://media.themoviedb.org/t/p/w188_and_h282_face/plcZXvI310FkbwIptvd6rqk63LP.jpg",[["The Little Mermaid (1989)","https://drive.google.com/file/d/1GM7QyJzFwEKM2fM42SWb7oIRN2UPUzqM/view?usp=sharing"],["The Little Mermaid (2023)","https://drive.google.com/file/d/1sFYkkRX85JK-a2LRl8_QmZPhYkYIn6KG/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/plcZXvI310FkbwIptvd6rqk63LP.jpg" alt="The Little Mermaid">
+      <div class="card-title">The Little Mermaid</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- The Little Rascals -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1eiY3r9KqM3Dmjtq38eRtR_eJFSGeciPz/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/qI7PKX2JSw4yD2iQm3pyHvKir28.jpg" alt="The Little Rascals">
+      <div class="card-title">The Little Rascals</div>
+    </a>
+
+    <!-- The Lorax -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1g6ZVlbeJ05SY5jleCqn_PMUMzevqPX6Y/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/tePFnZFw5JvjwjQjaKkqDPNMLPU.jpg" alt="The Lorax">
+      <div class="card-title">The Lorax</div>
+    </a>
+
+    <!-- M3GAN -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1MMl1EYr_OYdc9R-va2IIdPUmkqcj1UpR/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/d9nBoowhjiiYc4FBNtQkPY7c11H.jpg" alt="M3GAN">
+      <div class="card-title">M3GAN</div>
+    </a>
+
+    <!-- Major Payne -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1HOBF8qYxnEXjbjouFThL4B3ttoBiNUOY/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/kWHx5eq7PELkF3If7LrrhuBskRG.jpg" alt="Major Payne">
+      <div class="card-title">Major Payne</div>
+    </a>
+
+    <!-- Maleficent -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1yx66GkjBaCwjcMNoovV8w9yPNlZ7Q4Gu/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/bDG3yei6AJlEAK3A5wN7RwFXQ7V.jpg" alt="Maleficent">
+      <div class="card-title">Maleficent</div>
+    </a>
+
+    <!-- The Mask -->
+    <a class="movie-card" href="https://drive.google.com/file/d/13IzLS6dOFDxCk_mNWpttFncqs1hQoJ3L/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/jPC2eYub74zwf2tPGVtzSlBW6Oy.jpg" alt="The Mask">
+      <div class="card-title">The Mask</div>
+    </a>
+
+    <!-- The Matrix -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1qUy2Uk4nAGj72Ev81g67tx-snjKA-6Ne/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/aOIuZAjPaRIE6CMzbazvcHuHXDc.jpg" alt="The Matrix">
+      <div class="card-title">The Matrix</div>
+    </a>
+
+    <!-- Mean Girls -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1Hab49OuPK37MngOtQolLsVIzJ4AK9cNA/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/fXm3YKXAEjx7d2tIWDg9TfRZtsU.jpg" alt="Mean Girls">
+      <div class="card-title">Mean Girls</div>
+    </a>
+
+    <!-- The Menu -->
+    <a class="movie-card" href="https://drive.google.com/file/d/14Audx3RqZPMTyLzErPzkKuCQPVWhTC0y/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/fPtUgMcLIboqlTlPrq0bQpKK8eq.jpg" alt="The Menu">
+      <div class="card-title">The Menu</div>
+    </a>
+
+    <!-- The Mighty Ducks -->
+    <div class="movie-card" onclick='openModal("The Mighty Ducks","https://media.themoviedb.org/t/p/w188_and_h282_face/ohfKOxy4028jm2XQL7Wy6cVMKhm.jpg",[["The Mighty Ducks","https://drive.google.com/file/d/1MKL3dbjVCDH4cmnPtBoT8SeQeoK8bRYN/view?usp=drive_link"],["D2: The Mighty Ducks","https://drive.google.com/file/d/1xqucoWKrHYKgkPtIH504nV_QWrezUcC9/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/ohfKOxy4028jm2XQL7Wy6cVMKhm.jpg" alt="The Mighty Ducks">
+      <div class="card-title">The Mighty Ducks</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Miraculous -->
+    <div class="movie-card" onclick='openModal("Miraculous","https://media.themoviedb.org/t/p/w188_and_h282_face/9YbyvcrHmY2SVbdfXpb8mC4Fy0g.jpg",[["Miraculous: New York","https://drive.google.com/file/d/1jTfxqP7BrcbIv5SVAxHP7FFIdt8A51ZJ/view?usp=share_link"],["Miraculous: Shanghai","https://drive.google.com/file/d/1jTfxqP7BrcbIv5SVAxHP7FFIdt8A51ZJ/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/9YbyvcrHmY2SVbdfXpb8mC4Fy0g.jpg" alt="Miraculous">
+      <div class="card-title">Miraculous</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Moana -->
+    <div class="movie-card" onclick='openModal("Moana","https://media.themoviedb.org/t/p/w188_and_h282_face/9tzN8sPbyod2dsa0lwuvrwBDWra.jpg",[["Moana","https://drive.google.com/file/d/1Zkep5HZHk6daQhYjAN5Y9fBGy-K9dCu3/view?usp=drive_link"],["Moana 2","https://drive.google.com/file/d/1khAaDGsMt8pAGqtIPJERCqM_PgpiLShO/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/9tzN8sPbyod2dsa0lwuvrwBDWra.jpg" alt="Moana">
+      <div class="card-title">Moana</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Monsters, Inc. -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1lmlVArBa1cDynHvvDOddrMnCPvYaFVeK/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/wFSpyMsp7H0ttERbxY7Trlv8xry.jpg" alt="Monsters, Inc.">
+      <div class="card-title">Monsters, Inc.</div>
+    </a>
+
+    <!-- Mortal Kombat -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1temXH9CFHCd7gjIsu8TMCFiqxMy8jXfj/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/fcK7tzSSXMYiMN8E9KlZJL1BYyp.jpg" alt="Mortal Kombat">
+      <div class="card-title">Mortal Kombat</div>
+    </a>
+
+    <!-- Mufasa: The Lion King -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1uQXNlwz-_1PwGdnJqTGUswBhJWgH8zMP/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/9bXHaLlsFYpJUutg4E6WXAjaxDi.jpg" alt="Mufasa: The Lion King">
+      <div class="card-title">Mufasa: The Lion King</div>
+    </a>
+
+    <!-- Mulan -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1ye-qQ6ZmBW98Xab4sjDJw1oxmUw_piBz/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/jAbexAtB0aSfP5Ay4TpWHARyVnG.jpg" alt="Mulan">
+      <div class="card-title">Mulan</div>
+    </a>
+
+    <!-- Napoleon -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1wBXYvvXlGsI7g6h-cMMZQ1YhoJ4SxHpl/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/ytFOXyghxLzAM4KZyazDdEkM66q.jpg" alt="Napoleon">
+      <div class="card-title">Napoleon</div>
+    </a>
+
+    <!-- The Nightmare Before Christmas -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1BPYV-xYt77pQYztFM14VHk3wBZZ_l0ng/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/oQffRNjK8e19rF7xVYEN8ew0j7b.jpg" alt="The Nightmare Before Christmas">
+      <div class="card-title">The Nightmare Before Christmas</div>
+    </a>
+
+    <!-- Norbit -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1PUIzjrlfRen4M7CqwIcmVdABNBpMWt5s/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/XcZ5NzygPp54csxCnzvQKuxFL2.jpg" alt="Norbit">
+      <div class="card-title">Norbit</div>
+    </a>
+
+    <!-- Pacific Rim -->
+    <div class="movie-card" onclick='openModal("Pacific Rim","https://media.themoviedb.org/t/p/w188_and_h282_face/8wo4eN8dWKaKlxhSvBz19uvj8gA.jpg",[["Pacific Rim","https://sites.google.com/view/ttbr-11-777-ggbht/moves/pacific-rim?authuser=0"],["Pacific Rim: Uprising","https://drive.google.com/file/d/1rZZBiG6H7Q2Fznd552IxwQrIu0-X43zq/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/8wo4eN8dWKaKlxhSvBz19uvj8gA.jpg" alt="Pacific Rim">
+      <div class="card-title">Pacific Rim</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- PAW Patrol: The Mighty Movie -->
+    <a class="movie-card" href="https://drive.google.com/file/d/13PKSmF1dnXkByra1B5NLarzB_ux4cU0T/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/aTvePCU7exLepwg5hWySjwxojQK.jpg" alt="PAW Patrol: The Mighty Movie">
+      <div class="card-title">PAW Patrol: The Mighty Movie</div>
+    </a>
+
+    <!-- The Peanuts Movie -->
+    <a class="movie-card" href="https://drive.google.com/file/d/16Ze08q_XKmANPNYreDVZnEbZEZTSLwOa/view?usp=share_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/aiwdwnl7RFs1vcBanOKr13ye3wE.jpg" alt="The Peanuts Movie">
+      <div class="card-title">The Peanuts Movie</div>
+    </a>
+
+    <!-- Pixels -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1Wpvc4eawdHc3DjkVVop959tYmJL6m3J2/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/d26S5EfVXLNxRXqyFy1yyl3qRq3.jpg" alt="Pixels">
+      <div class="card-title">Pixels</div>
+    </a>
+
+    <!-- The Polar Express -->
+    <a class="movie-card" href="https://drive.google.com/file/d/19KYYKqlEQyEuUTUQv32U53WoIDvKTRrx/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/eOoCzH0MqeGr2taUZO4SwG416PF.jpg" alt="The Polar Express">
+      <div class="card-title">The Polar Express</div>
+    </a>
+
+    <!-- Power Rangers -->
+    <div class="movie-card" onclick='openModal("Power Rangers","https://media.themoviedb.org/t/p/w188_and_h282_face/qx3SJlAp2RK656TusqKx1qEqVMW.jpg",[["Mighty Morphin Power Rangers: The Movie","https://drive.google.com/file/d/1e-f3lzrTrRV3iVT7Ft-KLSd6fHbyUT2i/view"],["Power Rangers (2017)","https://drive.google.com/file/d/1bAS1zgiXsYJVXzhra9Fg2PHWBbVDU8lJ/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/qx3SJlAp2RK656TusqKx1qEqVMW.jpg" alt="Power Rangers">
+      <div class="card-title">Power Rangers</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Priscilla -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1CllzTqy_G0NAL8VQ0GvOToXpxIaxL2xh/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uDCeELWWpsNq7ErM61Yuq70WAE9.jpg" alt="Priscilla">
+      <div class="card-title">Priscilla</div>
+    </a>
+
+    <!-- The Princess and the Frog -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1PIQExpRvAPANHRDAZ-On7ld9je2O-5He/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/v6nAUs62OJ4DXmnnmPFeVmMz8H9.jpg" alt="The Princess and the Frog">
+      <div class="card-title">The Princess and the Frog</div>
+    </a>
+
+    <!-- The Princess Bride -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1YnPym55TCYUgdEe65MHELL13ygweFutT/view?usp=drivesdk" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/2FC9L9MrjBoGHYjYZjdWQdopVYb.jpg" alt="The Princess Bride">
+      <div class="card-title">The Princess Bride</div>
+    </a>
+
+    <!-- The Proud Family Movie -->
+    <a class="movie-card" href="https://sites.google.com/view/ttbr-11-777-ggbht/moves/the-proud-family-movie?authuser=0" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/rzq3cG9h5NTjXoCkMFgy0sZtSlV.jpg" alt="The Proud Family Movie">
+      <div class="card-title">The Proud Family Movie</div>
+    </a>
+
+    <!-- Puss in Boots: The Last Wish -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1SxMLkaBMyPSuruaAmGWoA7AKB4FV9j3J/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/kuf6dutpsT0vSVehic3EZIqkOBt.jpg" alt="Puss in Boots: The Last Wish">
+      <div class="card-title">Puss in Boots: The Last Wish</div>
+    </a>
+
+    <!-- The Purge -->
+    <div class="movie-card" onclick='openModal("The Purge","https://upload.wikimedia.org/wikipedia/en/9/94/The_Purge_film_poster.jpg",[["The Purge (2013)","https://drive.google.com/file/d/1PFz-u8_kVFY8Z--NyloACB1DUwiT0oK4/view"],["The Purge: Anarchy","https://drive.google.com/file/d/1d7FFXzRf0u7L23AqH-HsUua_kA8a_edQ/view"],["The Forever Purge","https://drive.google.com/file/d/1gl4AuWnS848wnWlbH9ToOi7Ga1OV7y_1/view"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/9/94/The_Purge_film_poster.jpg" alt="The Purge">
+      <div class="card-title">The Purge</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Rambo III -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1KDIkm6VSTb_QrvSb8Gvbus8z-L3BGySI/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uycbt9iVlAnKkQIisqUWuO8hVcm.jpg" alt="Rambo III">
+      <div class="card-title">Rambo III</div>
+    </a>
+
+    <!-- Ratatouille -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1kjVDdXtZ3-O0SndMHeIwMXe4jNZJ4w2C/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/t3vaWRPSf6WjDSamIkKDs1iQWna.jpg" alt="Ratatouille">
+      <div class="card-title">Ratatouille</div>
+    </a>
+
+    <!-- Ready Player One -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1vCPMrNGFL3Kyf1J4qaySzKnACtg8eAqj/view?usp=drivesdk" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/pU1ULUq8D3iRxl1fdX2lZIzdHuI.jpg" alt="Ready Player One">
+      <div class="card-title">Ready Player One</div>
+    </a>
+
+    <!-- Real Steel -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1zamnVJgx2cGGc4r2w9jWiEqRIG9WJREE/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/4GIeI5K5YdDUkR3mNQBoScpSFEf.jpg" alt="Real Steel">
+      <div class="card-title">Real Steel</div>
+    </a>
+
+    <!-- Return to Oz -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1qINcGAx8SUBfoh3O-HeVLetY_rSVueAG/view?usp=drivesdk" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/zKaH6CbrgxNLw9lsEinLxx173Tw.jpg" alt="Return to Oz">
+      <div class="card-title">Return to Oz</div>
+    </a>
+
+    <!-- Star Wars: Revenge of the Sith -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1lEszWnr2BinTfzBGqtoDV1W9wMIlTQtb/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg" alt="Star Wars: Revenge of the Sith">
+      <div class="card-title">Star Wars: Revenge of the Sith</div>
+    </a>
+
+    <!-- Rick and Morty -->
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1ySajy4O8tRbVd_vlGCk9uyMxYHFUH-Hy" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/WGRQ8FpjkDTzivQJ43t94bOuY0.jpg" alt="Rick and Morty">
+      <div class="card-title">Rick and Morty</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- Rio -->
+    <div class="movie-card" onclick='openModal("Rio","https://media.themoviedb.org/t/p/w188_and_h282_face/4nJxhUknKV8Gqdhov8pU1YWDYfb.jpg",[["Rio","https://drive.google.com/file/d/1DIHKkPm7JVwOWWgM5RvYgOhAbFXWOAhf/view?usp=share_link"],["Rio 2","https://drive.google.com/file/d/12oiUUNl2_I7l1GsXLD74FA0wJlrRX7v_/view?usp=share_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/4nJxhUknKV8Gqdhov8pU1YWDYfb.jpg" alt="Rio">
+      <div class="card-title">Rio</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Rise of the Planet of the Apes -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1gfhsOi21mgw9MPdSo6ttTMFJbhNKuwjn/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/oqA45qMyyo1TtrnVEBKxqmTPhbN.jpg" alt="Rise of the Planet of the Apes">
+      <div class="card-title">Rise of the Planet of the Apes</div>
+    </a>
+
+    <!-- The Road to El Dorado -->
+    <a class="movie-card" href="https://sites.google.com/view/ttbr-11-777-ggbht/moves/road-to-el-dorado?authuser=0" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/tQuqhUBACMcGqCvliHxpJreBfXC.jpg" alt="The Road to El Dorado">
+      <div class="card-title">The Road to El Dorado</div>
+    </a>
+
+    <!-- Romeo + Juliet -->
+    <a class="movie-card" href="https://drive.google.com/file/d/12_qQEuH75vHIqFjIwmDlawqQmav5RG-u/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/eLf4jclPijOqfEp6bDAmezRFxk5.jpg" alt="Romeo + Juliet">
+      <div class="card-title">Romeo + Juliet</div>
+    </a>
+
+    <!-- Ron's Gone Wrong -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1nKl-oBgmnWygnF7xm6CfSWikp22ElVZY/view?usp=share_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/plzgQAXIEHm4Y92ktxU6fedUc0x.jpg" alt="Ron's Gone Wrong">
+      <div class="card-title">Ron's Gone Wrong</div>
+    </a>
+
+    <!-- Rugrats -->
+    <div class="movie-card" onclick='openModal("Rugrats","https://media.themoviedb.org/t/p/w188_and_h282_face/uZejGKCSd6nwfMx8U0Td37U2fTc.jpg",[["The Rugrats Movie","https://drive.google.com/file/d/157WJal3P65gdyFlDbP4DcRfNku-Oursg/view"],["Rugrats in Paris","https://drive.google.com/file/d/1w3PdNgN0AXDmG1CYRv7v0kMYrC1Ywu_0/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uZejGKCSd6nwfMx8U0Td37U2fTc.jpg" alt="Rugrats">
+      <div class="card-title">Rugrats</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Rush Hour -->
+    <div class="movie-card" onclick='openModal("Rush Hour","https://media.themoviedb.org/t/p/w188_and_h282_face/3WsLE6FtxEPRa6U9sbY1ckrn39s.jpg",[["Rush Hour","https://drive.google.com/file/d/1ZcBKqjCxKjyddbVmb8sdOtCo-14v6fTp/view?usp=drive_link"],["Rush Hour 2","https://drive.google.com/file/d/1mnNpYvlG_QNVxpq8LniD4hOPLPinnBEP/view?usp=sharing"],["Rush Hour 3","https://drive.google.com/file/d/1fIOuM1hV1Ga0O6eQrhvozLNc35Rw-XB8/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/3WsLE6FtxEPRa6U9sbY1ckrn39s.jpg" alt="Rush Hour">
+      <div class="card-title">Rush Hour</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- The Sandlot -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1G9qRpMiBq5HD-vqKQs9sq8csZCFccaiD/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/7PYqz0viEuW8qTvuGinUMjDWMnj.jpg" alt="The Sandlot">
+      <div class="card-title">The Sandlot</div>
+    </a>
+
+    <!-- Saw -->
+    <div class="movie-card" onclick='openModal("Saw","https://media.themoviedb.org/t/p/w188_and_h282_face/rLNSOudrayDBo1uqXjrhxcjODIC.jpg",[["Saw","https://drive.google.com/file/d/1nZn3QfKiiZgg4nx3GRA4-K6obuJLlepm/view?usp=drive_link"],["Saw 2","https://drive.google.com/file/d/1eQLt5qFXYBjdvN05Jryfkc0MUF6eLZfS/view?usp=drive_link"],["Saw 3","https://drive.google.com/file/d/1afqsupX8WtCzEt3AbeKe_Ffwfb4oXzsa/view?usp=drive_link"],["Saw 4","https://drive.google.com/file/d/1XmKqBrU4I1QqPnKG5WGpVImeTFvBjy0n/view?usp=drive_link"],["Saw 5","https://drive.google.com/file/d/1Rng7E07HcEPZmWvxYHk2gnrhArp_0MsS/view?usp=drive_link"],["Saw 6","https://drive.google.com/file/d/1v_fqql_iAIszlP5qG5735UX8NVGXXFud/view?usp=drive_link"],["Saw 7: The Final Chapter","https://drive.google.com/file/d/1uMSvmCNTmuuY_imm9J8ZvipQW8rWMcCJ/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/rLNSOudrayDBo1uqXjrhxcjODIC.jpg" alt="Saw">
+      <div class="card-title">Saw</div>
+      <div class="multi-badge">7 Films</div>
+    </div>
+
+    <!-- Scary Movie -->
+    <div class="movie-card" onclick='openModal("Scary Movie","https://media.themoviedb.org/t/p/w188_and_h282_face/fVQFPRuw3yWXojYDJvA5EoFjUOY.jpg",[["Scary Movie","https://drive.google.com/file/d/1-61Fls8_MDTVq3r5dHP58joVRiUloxZQ/view?usp=drive_link"],["Scary Movie 2","https://drive.google.com/file/d/1Jmeyjhlpg6A-W-XJPoqC8uhtWztuQe-F/view?usp=drive_link"],["Scary Movie 3","https://drive.google.com/file/d/1KN1dzjj-d6MhY47MIgWdT2Au10Ft7Bf1/view?usp=drive_link"],["Scary Movie 4","https://drive.google.com/file/d/1pgH5VfJEi5NRVEtp2y_vZMSOk_rh3Har/view?usp=drive_link"],["Scary Movie 5","https://drive.google.com/file/d/1nnGh4CzlDg_ymz9YeDwl6L3ZXroIKtRu/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/fVQFPRuw3yWXojYDJvA5EoFjUOY.jpg" alt="Scary Movie">
+      <div class="card-title">Scary Movie</div>
+      <div class="multi-badge">5 Films</div>
+    </div>
+
+    <!-- Scooby-Doo: Where Are You -->
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1dq_qrg51SMtVW7SWAeYYrx-nKbfwKkXl" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/lTzUSCtXR77CmGmEHcaxpxu2b4h.jpg" alt="Scooby-Doo: Where Are You">
+      <div class="card-title">Scooby-Doo: Where Are You</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- Scream -->
+    <div class="movie-card" onclick='openModal("Scream","https://media.themoviedb.org/t/p/w188_and_h282_face/lr9ZIrmuwVmZhpZuTCW8D9g0ZJe.jpg",[["Scream","https://drive.google.com/file/d/14UKIE2jtMo0qFPbomlXVKsKA5l81W4OE/view?usp=share_link"],["Scream 2","https://drive.google.com/file/d/1XXmiwcrUSMi5rn90xr5hnBK6La8hBkhz/view?usp=share_link"],["Scream 3","https://drive.google.com/file/d/1O1mkNEfq98w2Zrxyg6XLCfJI_bmfwWp_/view?usp=drive_link"],["Scream 4","https://drive.google.com/file/d/1t4kNJPFCytvx2ktdw5n6xBOtRNnBm5RJ/view?usp=share_link"],["Scream 5","https://drive.google.com/file/d/152-KeFdBMBscGESWVWLuDS-YUf8VsRCd/view?usp=share_link"],["Scream 6","https://drive.google.com/file/d/1zLFZE5jEzvjRSAawv9gOk-E5FYhsYblJ/view"],["Scream 7","https://drive.google.com/file/d/1RtaN8_Xsodf4Ub5K_yRp6eOx62tbj7Ap/view?usp=drivesdk"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/lr9ZIrmuwVmZhpZuTCW8D9g0ZJe.jpg" alt="Scream">
+      <div class="card-title">Scream</div>
+      <div class="multi-badge">7 Films</div>
+    </div>
+
+    <!-- Scrooged -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1zmDJ-0X5qV2niOZe7ZsL_sPk6w7XvDnr/view?usp=drivesdk" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uO0znfB2ZzTXA1IS7jkrjNbpkYK.jpg" alt="Scrooged">
+      <div class="card-title">Scrooged</div>
+    </a>
+
+    <!-- Shark Tale -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1tqtj-_jOe_a1DtU3ekZSf5n8NEtHT8hn/view?usp=share_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/r08DpyPyhXcJTfNZAICNGMzcQ8l.jpg" alt="Shark Tale">
+      <div class="card-title">Shark Tale</div>
+    </a>
+
+    <!-- Shazam! -->
+    <div class="movie-card" onclick='openModal("Shazam!","https://media.themoviedb.org/t/p/w188_and_h282_face/xnopI5Xtky18MPhK40cZAGAOVeV.jpg",[["Shazam!","https://drive.google.com/file/d/111DMVHuhGLLFunQ1ixi_OG8ui0ckXbfU/view?usp=share_link"],["Shazam! Fury of the Gods","https://drive.google.com/file/d/1LC17KNt1pxG1zJ43CwIBNGXaCN3cmLPc/view?usp=share_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/xnopI5Xtky18MPhK40cZAGAOVeV.jpg" alt="Shazam!">
+      <div class="card-title">Shazam!</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- The Simpsons -->
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1ZtFBjPAE-qVzdHJ3EKnvlBFNhux5m3Hi" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uWpG7GqfKGQqX4YMAo3nv5OrglV.jpg" alt="The Simpsons">
+      <div class="card-title">The Simpsons</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- Sleepy Hollow -->
+    <a class="movie-card" href="https://drive.google.com/file/d/18gseXON5RP2ipsWcd0XGZH9k4TyaeYYR/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/2RHj62XneYMCRPAyQrEIrKVij12.jpg" alt="Sleepy Hollow">
+      <div class="card-title">Sleepy Hollow</div>
+    </a>
+
+    <!-- The Smurfs -->
+    <div class="movie-card" onclick='openModal("The Smurfs","https://media.themoviedb.org/t/p/w188_and_h282_face/vRhnslP2gW0QDym7BsMeSuioUfK.jpg",[["The Smurfs","https://drive.google.com/file/d/1gbp16Rw9fcysqsoY5vAxZqgXwNzKDfr2/view?usp=sharing"],["The Smurfs 2","https://drive.google.com/file/d/1FYgtU8rAKF32RjDRgYqODXzOHV0mQuBy/view?usp=share_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/vRhnslP2gW0QDym7BsMeSuioUfK.jpg" alt="The Smurfs">
+      <div class="card-title">The Smurfs</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Snitch -->
+    <a class="movie-card" href="https://drive.google.com/file/d/17hMZl5qq3Khflm_xUYZW9b8nGCJ6OBfA/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/1suKSCm8gVUIIOh4MgtWAtzkMe4.jpg" alt="Snitch">
+      <div class="card-title">Snitch</div>
+    </a>
+
+    <!-- Solo: A Star Wars Story -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1cVMCqyg7byeajsDkn4cyHQe7SSLfxVPL/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/4oD6VEccFkorEBTEDXtpLAaz0Rl.jpg" alt="Solo: A Star Wars Story">
+      <div class="card-title">Solo: A Star Wars Story</div>
+    </a>
+
+    <!-- Sonic for Hire -->
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1WORzHz85bNI-xPruLAEdcTvX9fRION4G" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/sn5RqwngufKXDtO63jFjZcL8fnV.jpg" alt="Sonic for Hire">
+      <div class="card-title">Sonic for Hire</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- Sonic Prime -->
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1q_NeRaY-fU59j9eiZQMs5bu-uFDb7oK9" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/mlDVnjgx89bmGvtXnKYDbowpadV.jpg" alt="Sonic Prime">
+      <div class="card-title">Sonic Prime</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- Sonic X -->
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1rM_wiU6k3TbIDvrp3kt72-4BFWO4GC7G" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/1EFqCQv0td8LMogXCpNEAW3uxgL.jpg" alt="Sonic X">
+      <div class="card-title">Sonic X</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- Sonic the Hedgehog -->
+    <div class="movie-card" onclick='openModal("Sonic the Hedgehog","https://media.themoviedb.org/t/p/w188_and_h282_face/aQvJ5WPzZgYVDrxLX4R6cLJCEaQ.jpg",[["Sonic the Hedgehog","https://drive.google.com/file/d/1h1hi-3Hn1awll6u51WQnGjkHqm3uJejF/view"],["Sonic the Hedgehog 2","https://drive.google.com/file/d/1cXe1a5ueZU9U_QZBU1-XpgNK0s6wi4o6/view"],["Sonic the Hedgehog 3","https://drive.google.com/file/d/1Pvg1OeuLicH_k3H1TOhomgJSmTugmm0d/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/aQvJ5WPzZgYVDrxLX4R6cLJCEaQ.jpg" alt="Sonic the Hedgehog">
+      <div class="card-title">Sonic the Hedgehog</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- South Park -->
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1PzKaoaK4blzlaoxnwC20gZoeYE5mDxWL" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/1CGwZCFX2qerXaXQJJUB3qUvxq7.jpg" alt="South Park">
+      <div class="card-title">South Park</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- South Park: The End of Obesity -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1k_Bk1E4vLdzymXcGOA92axzicOgmarFp/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/zxM1AIKBP83plf2buLR0cbGfvl2.jpg" alt="South Park: The End of Obesity">
+      <div class="card-title">South Park: The End of Obesity</div>
+    </a>
+
+    <!-- Space Jam -->
+    <div class="movie-card" onclick='openModal("Space Jam","https://media.themoviedb.org/t/p/w188_and_h282_face/4RN5El3Pj2W4gpwgiAGLVfSJv2g.jpg",[["Space Jam","https://drive.google.com/file/d/1QK9RHd2T-ijthIL7A6NQvRztPkTx8NtN/view?usp=sharing"],["Space Jam: A New Legacy","https://sites.google.com/view/ttbr-11-777-ggbht/moves/space-jam-a-new-legacy?authuser=0"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/4RN5El3Pj2W4gpwgiAGLVfSJv2g.jpg" alt="Space Jam">
+      <div class="card-title">Space Jam</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Spider-Man (Raimi Trilogy) -->
+    <div class="movie-card" onclick='openModal("Spider-Man (Raimi Trilogy)","https://media.themoviedb.org/t/p/w188_and_h282_face/kjdJntyBeEvqm9w97QGBdxPptzj.jpg",[["Spider-Man","https://drive.google.com/file/d/1sqWGrmbGc5lBmoFbtfMSIaqb60eXppvF/view?usp=share_link"],["Spider-Man 2","https://drive.google.com/file/d/1yV7ZmEkfOVOLdV51wN6vSeDf3_tQqBvf/view?usp=share_link"],["Spider-Man 3","https://drive.google.com/file/d/1vi0w7U65XeR-u00AQ8uS9s3C-IoiV-_1/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/kjdJntyBeEvqm9w97QGBdxPptzj.jpg" alt="Spider-Man">
+      <div class="card-title">Spider-Man (Raimi Trilogy)</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Spider-Man (MCU) -->
+    <div class="movie-card" onclick='openModal("Spider-Man (MCU)","https://media.themoviedb.org/t/p/w188_and_h282_face/c24sv2weTHPsmDa7jEMN0m2P3RT.jpg",[["Spider-Man: Homecoming","https://drive.google.com/file/d/1jGHx1i3EqHKmQmE42APmxUk4bYHrINQ_/view"],["Spider-Man: Far From Home","https://drive.google.com/file/d/1vPNUTkubVVmguVfwstRQm5xgbkRRii6z/view"],["Spider-Man: No Way Home","https://drive.google.com/file/d/1mUF4PcT0_ZKofV0KHHdjxgTQdhF2BliQ/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/c24sv2weTHPsmDa7jEMN0m2P3RT.jpg" alt="Spider-Man (MCU)">
+      <div class="card-title">Spider-Man (MCU)</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Spider-Man: Spider-Verse -->
+    <div class="movie-card" onclick='openModal("Spider-Man: Spider-Verse","https://media.themoviedb.org/t/p/w188_and_h282_face/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg",[["Into the Spider-Verse","https://drive.google.com/file/d/1V3Bq0lrDQUxJay5DDs3gK69ZvRNb1j2u/view?usp=share_link"],["Across the Spider-Verse","https://drive.google.com/file/d/1Sd1l_LhKRp_2OE5gRJJyPubnZjJccLgQ/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg" alt="Spider-Man: Spider-Verse">
+      <div class="card-title">Spider-Man: Spider-Verse</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- SpongeBob -->
+    <div class="movie-card" onclick='openModal("SpongeBob","https://media.themoviedb.org/t/p/w188_and_h282_face/5h0EU2lqBb03dp5vtRuUHJwqzem.jpg",[["SpongeBob Season 1","https://drive.google.com/drive/folders/1B_ALuHVeJr6Mop13Mrhq5KyYlIqnAKyn"],["SpongeBob: Sponge Out of the Water","https://drive.google.com/file/d/1YasC1VXzjwNrR-gYL71waDSV8YK7zdTO/view"],["The Sandy Cheeks Movie","https://drive.google.com/file/d/17fAM9sipu3BPElFpqFrG3ukYahbUEZQJ/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/5h0EU2lqBb03dp5vtRuUHJwqzem.jpg" alt="SpongeBob">
+      <div class="card-title">SpongeBob</div>
+      <div class="tv-badge">TV</div>
+      <div class="multi-badge">3 Items</div>
+    </div>
+
+    <!-- Star Wars -->
+    <div class="movie-card" onclick='openModal("Star Wars","https://media.themoviedb.org/t/p/w188_and_h282_face/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",[["A New Hope (1977)","https://drive.google.com/file/d/1nDgCNAuFgSI6fDKbRZFkDhzViib1ixYS/view?usp=drive_link"],["The Empire Strikes Back (1980)","https://drive.google.com/file/d/1q0Jof59Il_So2z5Q38ANn55qB2GCpOx3/view?usp=drive_link"],["Attack of the Clones (2002)","https://drive.google.com/file/d/1u0ZRN7s8rgAMYtvnGf3zTjpM7Fu6TmW_/view?usp=drive_link"],["Revenge of the Sith (2005)","https://drive.google.com/file/d/1lEszWnr2BinTfzBGqtoDV1W9wMIlTQtb/view?usp=drive_link"],["The Clone Wars (2008)","https://drive.google.com/file/d/16dO2t6nMYzRFTKGBVByMPYtru6kwix7H/view?usp=drive_link"],["The Force Awakens (2015)","https://drive.google.com/file/d/1D-T-C4PNPbZ61wiHqXgQlQqYy_NTcsKa/view?usp=drive_link"],["The Last Jedi (2017)","https://drive.google.com/file/d/1vCdep3QXu8GE9IaNUdVmCGLiG24kFrWb/view?usp=drive_link"],["Solo: A Star Wars Story (2018)","https://drive.google.com/file/d/1cVMCqyg7byeajsDkn4cyHQe7SSLfxVPL/view?usp=drive_link"],["The Rise of Skywalker (2019)","https://drive.google.com/file/d/1viDV-Gu6yGHOpyaDefPH3Id9fXSHuTsi/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg" alt="Star Wars">
+      <div class="card-title">Star Wars</div>
+      <div class="multi-badge">9 Films</div>
+    </div>
+
+    <!-- Strays -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1mwatNbn0A7PeIm_alMZGYobXbsNIgBlo/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uRC7uni7bq1kMRqH5ZpysjE8EuR.jpg" alt="Strays">
+      <div class="card-title">Strays</div>
+    </a>
+
+    <!-- Suicide Squad -->
+    <div class="movie-card" onclick='openModal("Suicide Squad","https://upload.wikimedia.org/wikipedia/en/5/5c/Suicide_Squad_%282016_film%29_poster.png",[["Suicide Squad (2016)","https://drive.google.com/file/d/1m2m6kudeN5pivaeCWfMR88xXEyZg8nFK/view?usp=sharing"],["The Suicide Squad (2021)","https://drive.google.com/file/d/11nKqV7QKkATlvO7pt8eHlfS32rSHeOVZ/view?usp=sharing"]])'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/5/5c/Suicide_Squad_%282016_film%29_poster.png" alt="Suicide Squad">
+      <div class="card-title">Suicide Squad</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Superman (2025) -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1A61oIlDB8zy0cgj2tJdquKVpaJzl26mr/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/ldyfo0BKmz5rWtJJKCvwaNS4cJT.jpg" alt="Superman (2025)">
+      <div class="card-title">Superman (2025)</div>
+    </a>
+
+    <!-- Super Mario Galaxy -->
+    <a class="movie-card" href="https://drive.google.com/file/d/14v5G1i88QriR2cKV-n1OiLFCo849jpaV/view" target="_blank">
+      <img src="https://resizing.flixster.com/D6aLbOtCJdj4ItAJL_UgDI_lzzA=/206x305/v2/https://resizing.flixster.com/HAAN4N8Iq2P5RWAU3LpQeP3Rp1k=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzLzhjZWE4M2NjLWIxYjItNGVhNC04YTc0LTliN2FjZDA1NzI2Mi5qcGc=" alt="Super Mario Galaxy">
+      <div class="card-title">Super Mario Galaxy</div>
+    </a>
+
+    <!-- The Super Mario Bros. Movie -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1OsyF2LKJqjtv0b2Xd9GWOLcYkzny3VZo/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg" alt="The Super Mario Bros. Movie">
+      <div class="card-title">The Super Mario Bros. Movie</div>
+    </a>
+
+    <!-- The Swan Princess -->
+    <a class="movie-card" href="https://sites.google.com/view/ttbr-11-777-ggbht/moves/swan-princess?authuser=0" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/f5YvIPrkJ9HCsNbgzWJJyxXVNhj.jpg" alt="The Swan Princess">
+      <div class="card-title">The Swan Princess</div>
+    </a>
+
+    <!-- Tangled -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1eirKJt3ulfEusRJ6OM0jwpJ_YbL8iExC/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/ym7Kst6a4uodryxqbGOxmewF235.jpg" alt="Tangled">
+      <div class="card-title">Tangled</div>
+    </a>
+
+    <!-- Ted -->
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1-6hBb-KZsUoc7ErXnaw2udeQv9u1THRJ" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/cPn71YFDENH0JkWUezlsLyWmLfN.jpg" alt="Ted">
+      <div class="card-title">Ted</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- Teen Titans -->
+    <div class="movie-card" onclick='openModal("Teen Titans","https://media.themoviedb.org/t/p/w188_and_h282_face/nuGIlNAJUati4qEAH1nrYKUA3xa.jpg",[["Teen Titans: The Judas Contract","https://sites.google.com/view/ttbr-11-777-ggbht/moves/teen-titans-the-judas-contract?authuser=0"],["Teen Titans: Trouble in Tokyo","https://sites.google.com/view/ttbr-11-777-ggbht/moves/teen-titans-trouble-in-tokyo?authuser=0"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/nuGIlNAJUati4qEAH1nrYKUA3xa.jpg" alt="Teen Titans">
+      <div class="card-title">Teen Titans</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Teenage Mutant Ninja Turtles -->
+    <div class="movie-card" onclick='openModal("Teenage Mutant Ninja Turtles","https://media.themoviedb.org/t/p/w188_and_h282_face/shfAU6xIIEAEtsloIT3n9Fscz2E.jpg",[["TMNT (1990)","https://drive.google.com/file/d/1ivJXBaVGvN_HQJf-h46ko2DjyHHBZMH1/view"],["TMNT II: Secret of the Ooze","https://drive.google.com/file/d/1Bp9ioxFqOCfmEbQM90cbLcFAn9bPysDu/view"],["TMNT III (1993)","https://drive.google.com/file/d/1gdIpjtTCHV_a8p9KPQaQg1ljIcanpu5S/view"],["TMNT (2007)","https://drive.google.com/file/d/18iqYAOVbRHOT7jzJ3sqlyxi8RS5AH5sM/view?usp=sharing"],["TMNT (2014)","https://drive.google.com/file/d/1nfyJg41IDD_zRmv3i64MUSpPuCPTq7gb/view?usp=sharing"],["TMNT: Out of the Shadows","https://drive.google.com/file/d/1fWvuZyyF8dWKn9y60awRgwTxKAQd11cl/view?usp=sharing"],["TMNT: Mutant Mayhem","https://drive.google.com/file/d/1IZNQlKBJi5HwRJDokQ-YuxfteFKgLZI5/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/shfAU6xIIEAEtsloIT3n9Fscz2E.jpg" alt="Teenage Mutant Ninja Turtles">
+      <div class="card-title">Teenage Mutant Ninja Turtles</div>
+      <div class="multi-badge">7 Films</div>
+    </div>
+
+    <!-- Terrifier -->
+    <div class="movie-card" onclick='openModal("Terrifier","https://media.themoviedb.org/t/p/w188_and_h282_face/fjXqhGmaeQpB73WerhrYU6HlyV5.jpg",[["Terrifier","https://drive.google.com/file/d/18N4_ou-sji02HD3dOFNP0aDqCBleLr7G/view?usp=drive_link"],["Terrifier 2","https://drive.google.com/file/d/1i68ih2XgYHdjDTqR_pfmXuFut_LuCtZY/view?usp=sharing"],["Terrifier 3","https://drive.google.com/file/d/1C0yGUsqW5IT81q8PAebnlw0Ha6oHWYV4/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/fjXqhGmaeQpB73WerhrYU6HlyV5.jpg" alt="Terrifier">
+      <div class="card-title">Terrifier</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Thirteen -->
+    <a class="movie-card" href="https://drive.google.com/file/d/10HMzcDDav-A9xTydLioxLEfcou7SICYL/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/kwTHwy53aXITTWYNZvarczlo02S.jpg" alt="Thirteen">
+      <div class="card-title">Thirteen</div>
+    </a>
+
+    <!-- Thor -->
+    <div class="movie-card" onclick='openModal("Thor","https://media.themoviedb.org/t/p/w188_and_h282_face/wp6OxE4poJ4G7c0U2ZIXasTSMR7.jpg",[["Thor: The Dark World","https://drive.google.com/file/d/10r1UB_bpBRfG8HykNJ2j63nwUawm-3FS/view"],["Thor: Ragnarok","https://drive.google.com/file/d/1RqAtiuHbEphQTki4GolLXncnpboseZmv/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/wp6OxE4poJ4G7c0U2ZIXasTSMR7.jpg" alt="Thor">
+      <div class="card-title">Thor</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Toy Story -->
+    <div class="movie-card" onclick='openModal("Toy Story","https://media.themoviedb.org/t/p/w188_and_h282_face/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg",[["Toy Story (1995)","https://drive.google.com/file/d/1fW6Ov5NIaRh4h78-qBpWeln_Vs9oEXOQ/view"],["Toy Story 2","https://drive.google.com/file/d/1k3RVDc_Vah1H9lFsXQZJ6mE3KqdDcK_T/view"],["Toy Story 4","https://drive.google.com/file/d/1-3BhV5qghqkqn2-xvlawSEvFNLvejMpn/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg" alt="Toy Story">
+      <div class="card-title">Toy Story</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Transformers -->
+    <div class="movie-card" onclick='openModal("Transformers","https://media.themoviedb.org/t/p/w188_and_h282_face/iRCgqpdVE4wyLQvGYU3ZP7pAtUc.jpg",[["Transformers (2007)","https://drive.google.com/file/d/10cwJT2ssiHVBeRWMdEVHKt0bhk8PVOHY/view?usp=drive_link"],["Revenge of the Fallen","https://sites.google.com/view/ttbr-11-777-ggbht/moves/transformers-revenge-of-the-fallen?authuser=0"],["Dark of the Moon","https://drive.google.com/file/d/19dfiTEEqIVE9cxVBsyNVoG5c4UebhS0F/view?usp=share_link"],["Age of Extinction","https://drive.google.com/file/d/1evgnLc_0TRlHQ8_tcMcZYaYY-2_RmKWZ/view?usp=share_link"],["The Last Knight","https://drive.google.com/file/d/1b9ZHT2vDIp-JJ9JD0PWbEbyU1bDZMcPl/view?usp=share_link"],["Bumblebee","https://drive.google.com/file/d/1wqi9Wk--koq0SqRkoVZWXLVJBtABkjPy/view?usp=share_link"],["Rise of the Beasts","https://drive.google.com/file/d/1Xunn1qXhQ1jvB5VXYiv0LShGAvD74u2Q/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/iRCgqpdVE4wyLQvGYU3ZP7pAtUc.jpg" alt="Transformers">
+      <div class="card-title">Transformers</div>
+      <div class="multi-badge">7 Films</div>
+    </div>
+
+    <!-- Tron -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1hbhWcI11gA5EcXAxXGJkIjzq7VQIpZGp/view?usp=drivesdk" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/jigY9B6TKz4qlfikZcd18qtzTK4.jpg" alt="Tron">
+      <div class="card-title">Tron</div>
+    </a>
+
+    <!-- Trolls Band Together -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1XRVLJkHTb7yOjW2daDKL1LQq_ySsRghU/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/3ySgD2xwasTHOK6R9bNZiEwKgYo.jpg" alt="Trolls Band Together">
+      <div class="card-title">Trolls Band Together</div>
+    </a>
+
+    <!-- Turning Red -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1joF2I_zdjepCD9ukmjV672HTICUfp4tO/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/qsdjk9oAKSQMWs0Vt5Pyfh6O4GZ.jpg" alt="Turning Red">
+      <div class="card-title">Turning Red</div>
+    </a>
+
+    <!-- The Twilight Saga -->
+    <div class="movie-card" onclick='openModal("The Twilight Saga","https://media.themoviedb.org/t/p/w188_and_h282_face/3Gkb6jm6962ADUPaCBqzz9CTbn9.jpg",[["Twilight","https://drive.google.com/file/d/1YEIurV6IBGg7IYqTE9EX2vHLUQeEfBjH/view?usp=sharing"],["New Moon","https://drive.google.com/file/d/1LTDkhMpQLpkNdy6KVU81H-Y_J4lQ3PHV/view?usp=drive_link"],["Eclipse","https://drive.google.com/file/d/1l3n45XIBKJuV8Osp7V30X3Ki4QgAa4Cn/view?usp=drive_link"],["Breaking Dawn Part 1","https://drive.google.com/file/d/1GTUALkIJ4mkxae00sdbQdGUhUl4i8lGm/view?usp=drive_link"],["Breaking Dawn Part 2","https://drive.google.com/file/d/12J1e35T-HQtLoTvfs70-TlZ4oJsXsxvX/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/3Gkb6jm6962ADUPaCBqzz9CTbn9.jpg" alt="The Twilight Saga">
+      <div class="card-title">The Twilight Saga</div>
+      <div class="multi-badge">5 Films</div>
+    </div>
+
+    <!-- Venom -->
+    <div class="movie-card" onclick='openModal("Venom","https://media.themoviedb.org/t/p/w188_and_h282_face/2uNW4WbgBXL25BAbXGLnLqX71Sw.jpg",[["Venom","https://drive.google.com/file/d/1iRN197XeJCQnZGza599ZTXsayEG1mdRB/view"],["Venom: Let There Be Carnage","https://drive.google.com/file/d/1N6kL0SF4qR6wFpwfGIZUZjFnz3lQDGGz/view?usp=sharing"],["Venom: The Last Dance","https://drive.google.com/file/d/1hASiHRDz9oyG-NSHEzLNLPFeAMa_HuoH/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/2uNW4WbgBXL25BAbXGLnLqX71Sw.jpg" alt="Venom">
+      <div class="card-title">Venom</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- War Dogs -->
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1dAcCk18ksPVX1vOSmwuwXA8IFoYpZ6eX?ths=true" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/mDcPRjZC1bb6LavFU3gwsWdVfCM.jpg" alt="War Dogs">
+      <div class="card-title">War Dogs</div>
+    </a>
+
+    <!-- Wednesday -->
+    <div class="movie-card" onclick='openModal("Wednesday","https://media.themoviedb.org/t/p/w188_and_h282_face/36xXlhEpQqVVPuiZhfoQuaY4OlA.jpg",[["Episode 1","https://drive.google.com/file/d/1GD7dmbbwf0tgmc_0Bt6Rq4qXV7KSTCMD/view"],["Episode 2","https://drive.google.com/file/d/1uq1jm6pM1e1QcAFVcepLeTEzUsSRaa9E/view"],["Episode 3","https://drive.google.com/file/d/1Sv4hMQIoO3CZ7WbzuXOWa5c_NTv6wSLM/view"],["Episode 4","https://drive.google.com/file/d/1uw2PCLsJ0DjfGi_-_VERVsqyY_hhkzQ6/view"],["Episode 5","https://drive.google.com/file/d/1HbBi8TcyeRkBvqBk5xSO9PSL3l7ZqNwE/view"],["Episode 6","https://drive.google.com/file/d/1RsM-9eXikQboCFDfNEMg_KxYaXN07TDv/view"],["Episode 7","https://drive.google.com/file/d/1rcYIsPla7mA-XfZ8cnn4Vn8B-UPVoPMc/view"],["Episode 8","https://drive.google.com/file/d/13-JQKH6qDYi9tBMY1v_mHnfh_sMDDNxS/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/36xXlhEpQqVVPuiZhfoQuaY4OlA.jpg" alt="Wednesday">
+      <div class="card-title">Wednesday</div>
+      <div class="tv-badge">TV</div>
+      <div class="multi-badge">8 Eps</div>
+    </div>
+
+    <!-- West Side Story -->
+    <div class="movie-card" onclick='openModal("West Side Story","https://media.themoviedb.org/t/p/w188_and_h282_face/nzCMu6D5q60i2bVrIQ0DxlRSgCZ.jpg",[["West Side Story (1961)","https://drive.google.com/file/d/1CBGr82HWTP2XM-HJPURXFGV1uqE5-ip-/view?usp=drive_link"],["West Side Story (2021)","https://drive.google.com/file/d/1XCfKDI8cKvYQO2UGFOKBe5qlmcL8Vsry/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/nzCMu6D5q60i2bVrIQ0DxlRSgCZ.jpg" alt="West Side Story">
+      <div class="card-title">West Side Story</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- What's New Scooby-Doo -->
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1lzhZ7zI8txmOQxERhfNrFewiU96kpnxZ" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/7sX80eWq4XHvFGUmCg803iifUcG.jpg" alt="What's New Scooby-Doo">
+      <div class="card-title">What's New Scooby-Doo</div>
+      <div class="tv-badge">TV</div>
+    </a>
+
+    <!-- White Chicks -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1IniRDbSyVeGuGIadQ_rX9RL8AJczmm2S/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/aHTUpo45qy9QYIOnVITGGqLoVcA.jpg" alt="White Chicks">
+      <div class="card-title">White Chicks</div>
+    </a>
+
+    <!-- White Men Can't Jump -->
+    <div class="movie-card" onclick='openModal("White Men Can\u0027t Jump","https://media.themoviedb.org/t/p/w188_and_h282_face/jnI05Z2Cm9ACEJo8FGen7tdHKLl.jpg",[["White Men Can\u0027t Jump (1992)","https://drive.google.com/file/d/1MXghG0Dnn9XJ9iSGE6-bIuM7vysIxBfy/view?usp=drive_link"],["White Men Can\u0027t Jump (2023)","https://drive.google.com/file/d/1-WrSZaYE3Sq_bHifzyd4UJP7tc6Ea0Ur/view?usp=drive_link"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/jnI05Z2Cm9ACEJo8FGen7tdHKLl.jpg" alt="White Men Can't Jump">
+      <div class="card-title">White Men Can't Jump</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- Wicked -->
+    <div class="movie-card" onclick='openModal("Wicked","https://media.themoviedb.org/t/p/w188_and_h282_face/xDGbZ0JJ3mYaGKy4Nzd9Kph6M9L.jpg",[["Wicked","https://drive.google.com/file/d/1rEvyaS0PbRlQSPhYRnOnju_bI8uLnFhS/view?usp=drive_link"],["Wicked: For Good","https://drive.google.com/file/d/1nuTy_XH_23jidTMbwRZJfR5ZQl3vzi3z/view?usp=sharing"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/xDGbZ0JJ3mYaGKy4Nzd9Kph6M9L.jpg" alt="Wicked">
+      <div class="card-title">Wicked</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- The Wild Robot -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1_N9iHDAM3RbU2a0GTfgcNXDGuZDT_yZ-/view" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/eG9lz41mJqsI4J6ubMtVqD26q2J.jpg" alt="The Wild Robot">
+      <div class="card-title">The Wild Robot</div>
+    </a>
+
+    <!-- Willy Wonka & the Chocolate Factory -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1oeD_wjeRQck_3uRIOw9ZXIxG5PuUIPVD/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/vmpsZkrs4Uvkp9r1atL8B3frA63.jpg" alt="Willy Wonka & the Chocolate Factory">
+      <div class="card-title">Willy Wonka &amp; the Chocolate Factory</div>
+    </a>
+
+    <!-- Wish -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1KOmgE1jMV0jT2QkWFFd3ieEzwf4GbVOw/view?usp=drive_link" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/nesuSdJakNkf0zs7OfoasB6Clxf.jpg" alt="Wish">
+      <div class="card-title">Wish</div>
+    </a>
+
+    <!-- The Wizard of Oz -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1ZfNxrVWB0U1Nwsrc03i5v9vGJtMJ9Ts3/view?usp=drivesdk" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/uCC3j4pV9eOZwzDUWp2ilbcTf1f.jpg" alt="The Wizard of Oz">
+      <div class="card-title">The Wizard of Oz</div>
+    </a>
+
+    <!-- Wreck-It Ralph -->
+    <div class="movie-card" onclick='openModal("Wreck-It Ralph","https://media.themoviedb.org/t/p/w188_and_h282_face/zWoIgZ7mgmPkaZjG0102BSKFIqQ.jpg",[["Wreck-It Ralph","https://drive.google.com/file/d/11NQ1_ecO2FTIhofVPIfakshgSBnR6ngC/view"],["Ralph Breaks the Internet","https://drive.google.com/file/d/1MQMWT5mYBF07GXiqgzAU8h9BcFe0phu9/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/zWoIgZ7mgmPkaZjG0102BSKFIqQ.jpg" alt="Wreck-It Ralph">
+      <div class="card-title">Wreck-It Ralph</div>
+      <div class="multi-badge">2 Films</div>
+    </div>
+
+    <!-- X-Men -->
+    <div class="movie-card" onclick='openModal("X-Men","https://media.themoviedb.org/t/p/w188_and_h282_face/2OFwsFhAobczgJWnVdwd9oZAF2N.jpg",[["X-Men","https://drive.google.com/file/d/1BIJIiG8fdpyudl-1vXHIU3TBb3XMXJaa/view"],["X2","https://drive.google.com/file/d/16fA19e1MhAZaUaosRHey_c1VAZoM1iB8/view"],["X-Men: The Last Stand","https://drive.google.com/file/d/176dVR22sSEaJMY5TfITCW9TIC2fNYBMm/view"]])'>
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/2OFwsFhAobczgJWnVdwd9oZAF2N.jpg" alt="X-Men">
+      <div class="card-title">X-Men</div>
+      <div class="multi-badge">3 Films</div>
+    </div>
+
+    <!-- Zapped -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1gO0OtMfAoVUaZGxX825aH48OySgHYd5n/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/62GbPhk68kK8v1cqcqz4i2RMmM0.jpg" alt="Zapped">
+      <div class="card-title">Zapped</div>
+    </a>
+
+    <!-- Zootopia 2 -->
+    <a class="movie-card" href="https://drive.google.com/file/d/1-PX9OZ8C3YrvjFtGhnH-YRO8kz75chAW/view?usp=sharing" target="_blank">
+      <img src="https://media.themoviedb.org/t/p/w188_and_h282_face/oJ7g2CifqpStmoYQyaLQgEU32qO.jpg" alt="Zootopia 2">
+      <div class="card-title">Zootopia 2</div>
+    </a>
+
+    <p class="no-results" id="no-results">No titles found.</p>
+  </div>
+</div>
+
+<script>
+  /* ── Starfield ── */
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [];
+  const mouse = { x: -9999, y: -9999 };
+  const NUM = 160, REPEL_RADIUS = 140, REPEL_STRENGTH = 12;
+  const RETURN_FRICTION = 0.88, FLEE_FRICTION = 0.75;
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function rand(a, b) { return a + Math.random() * (b - a); }
+  function makeStar() {
+    const angle = Math.random() * Math.PI * 2, speed = rand(0.08, 0.32);
+    return {
+      x: Math.random() * W, y: Math.random() * H, ox: 0, oy: 0,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      size: rand(0.8, 2.4),
+      color: Math.random() < 0.15 ? `hsl(${rand(200,260)},80%,85%)` : '#ffffff',
+      twinkleSpeed: rand(0.005, 0.02), twinkleOffset: Math.random() * Math.PI * 2,
+      alpha: rand(0.4, 1.0), shape: Math.random() < 0.3 ? 'star4' : 'dot'
+    };
+  }
+  function drawStar4(x, y, r, alpha, color) {
+    ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = color;
+    ctx.translate(x, y); ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const a = (i * Math.PI) / 4, rad = i % 2 === 0 ? r : r * 0.4;
+      i === 0 ? ctx.moveTo(Math.cos(a)*rad, Math.sin(a)*rad) : ctx.lineTo(Math.cos(a)*rad, Math.sin(a)*rad);
+    }
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  function drawDot(x, y, r, alpha, color) {
+    ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  }
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    ctx.clearRect(0, 0, W, H);
+    const bg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.8);
+    bg.addColorStop(0, '#07071a'); bg.addColorStop(1, '#000000');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    t += 0.016;
+    for (const s of stars) {
+      s.x += s.vx; s.y += s.vy;
+      if (s.x < -5) s.x = W + 5; if (s.x > W + 5) s.x = -5;
+      if (s.y < -5) s.y = H + 5; if (s.y > H + 5) s.y = -5;
+      const dx = s.x - mouse.x, dy = s.y - mouse.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < REPEL_RADIUS && dist > 0) {
+        const norm = 1 - (dist / REPEL_RADIUS), force = norm * norm * REPEL_STRENGTH;
+        s.ox += (dx/dist)*force*0.18; s.oy += (dy/dist)*force*0.18;
+        s.ox *= FLEE_FRICTION; s.oy *= FLEE_FRICTION;
+      } else { s.ox *= RETURN_FRICTION; s.oy *= RETURN_FRICTION; }
+      const rx = s.x + s.ox, ry = s.y + s.oy;
+      const twinkle = 0.5 + 0.5 * Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset);
+      const alpha = s.alpha * (0.6 + 0.4 * twinkle);
+      if (s.shape === 'star4') drawStar4(rx, ry, s.size*1.6, alpha, s.color);
+      else drawDot(rx, ry, s.size, alpha, s.color);
+    }
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+  resize();
+  stars = Array.from({ length: NUM }, makeStar);
+  animate();
+
+  /* ── UI Functions ── */
+  function surpriseMe() {
+    const cards = Array.from(document.querySelectorAll('.movie-card'));
+    const visible = cards.filter(c => c.style.display !== 'none');
+    const pick = visible[Math.floor(Math.random() * visible.length)];
+    if (pick.hasAttribute('onclick')) { pick.click(); } else { window.open(pick.href, '_blank'); }
+  }
+
+  function openModal(title, poster, parts) {
+    document.getElementById('modalTitle').textContent = title;
+    const img = document.getElementById('modalPoster');
+    img.src = poster; img.alt = title;
+    const container = document.getElementById('modalSeasons');
+    container.innerHTML = '';
+    parts.forEach(([label, url]) => {
+      const a = document.createElement('a');
+      a.className = 'season-btn';
+      a.href = url;
+      a.target = '_blank';
+      a.innerHTML = label + '<span>→</span>';
+      container.appendChild(a);
+    });
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modalOverlay')) {
+      document.getElementById('modalOverlay').classList.remove('open');
+    }
+  }
+
+  function closeModalDirect() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function filterCards() {
+    const query = document.getElementById('search').value.toLowerCase();
+    const cards = document.querySelectorAll('.movie-card');
+    let visible = 0;
+    cards.forEach(card => {
+      const title = card.querySelector('.card-title').textContent.toLowerCase();
+      if (title.includes(query)) { card.style.display = 'block'; visible++; }
+      else { card.style.display = 'none'; }
+    });
+    document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  /* Close modal on Escape key */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModalDirect();
+  });
+</script>
+
+</body>
+</html>
