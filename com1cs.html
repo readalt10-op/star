@@ -1,1 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body { height: 100%; overflow-x: hidden; background: #000; font-family: 'Raleway', sans-serif; }
+
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #ffffff;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: 8px;
+      text-align: center;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      text-shadow: 0 0 40px rgba(255,255,255,0.12);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.25);
+      font-weight: 300;
+      font-size: 13px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+
+    .notice-banner {
+      max-width: 820px;
+      margin: 0 auto 28px auto;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,170,0,0.10), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,170,0,0.25);
+      color: rgba(255,255,255,0.82);
+      text-align: center;
+      font-size: 13px;
+      letter-spacing: 1px;
+      line-height: 1.6;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    .notice-banner b { color: #ffd27a; }
+
+    .search-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      max-width: 480px;
+      padding: 12px 24px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: #ffffff;
+      font-family: 'Raleway', sans-serif;
+      font-size: 14px;
+      letter-spacing: 1px;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    .search-wrapper input::placeholder { color: rgba(255,255,255,0.25); letter-spacing: 2px; font-size: 13px; }
+    .search-wrapper input:focus { border-color: rgba(255,255,255,0.4); }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      margin-top: -20px;
+    }
+
+    .btn-surprise {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.6);
+      font-family: 'Raleway', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-surprise:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .btn-report {
+      background: rgba(255,80,80,0.08);
+      border: 1px solid rgba(255,80,80,0.2);
+      color: rgba(255,120,120,0.7);
+      font-family: 'Raleway', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-report:hover {
+      background: rgba(255,80,80,0.15);
+      color: rgba(255,140,140,1);
+      border-color: rgba(255,80,80,0.4);
+    }
+
+    .scene { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; }
+
+    .movie-card {
+      width: 180px;
+      height: 270px;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+      display: block;
+      text-decoration: none;
+    }
+
+    .movie-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+    .movie-card:hover { transform: scale(1.25); z-index: 10; box-shadow: 0 20px 50px rgba(0,0,0,0.65); }
+    .movie-card:hover img { transform: scale(1.05); }
+
+    .card-title {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 12px 10px;
+      background: linear-gradient(to top, rgba(0,0,0,0.95) 60%, transparent);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+    }
+
+    .no-results {
+      color: rgba(255,255,255,0.3);
+      font-size: 15px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-align: center;
+      width: 100%;
+      margin-top: 40px;
+      display: none;
+      font-weight: 300;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<div class="page">
+  <h1>Comics</h1>
+  <p class="subtitle">Your Collection</p>
+
+  <div class="notice-banner">
+    ⚠️ Some comics may not be viewable in-browser.
+    <b>Please download non-viewable comics</b> to read them properly.
+  </div>
+
+  <div class="search-wrapper">
+    <input type="text" id="search" placeholder="Search titles..." oninput="filterCards()" />
+  </div>
+
+  <div class="controls">
+    <button class="btn-surprise" onclick="surpriseMe()">✦ Surprise Me!</button>
+    <a class="btn-report" href="https://docs.google.com/forms/d/e/1FAIpQLScViq5Jqep3AGt9BpGzPRgjemgZxNy4SqhN7vlgAuLC1O8Low/viewform?usp=publish-editor" target="_blank">⚑ Report Comic</a>
+  </div>
+
+  <div class="scene" id="grid">
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1mmBVdj-oKIC0aSdOcMcEnQ129-rKimKo" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/61RLgk2k-1L._SY445_SX342_FMwebp_.jpg" alt="Demon Slayer: Kimetsu no Yaiba">
+      <div class="card-title">Demon Slayer: Kimetsu no Yaiba</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/12tApujIKnQjaSlTRchrO0AZ8WhvhaNtl" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/51HmXzAbsOL._SY445_SX342_FMwebp_.jpg" alt="Solo Leveling">
+      <div class="card-title">Solo Leveling</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1B46EboOes_-kq6jvdL1KSFAhrFMNk4Lj" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81PMKrZD-2L._SY385_.jpg" alt="Attack on Titan">
+      <div class="card-title">Attack on Titan</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1LNhG5Hjk4p9eJqvt0ooEpyAqnQRzJwYE" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81mYG45+twL._SY425_.jpg" alt="Death Note">
+      <div class="card-title">Death Note</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1GZKLsvSvgvHfM3CXg4DrCh4d0tGb0NLX" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/41FE6cItm3L._SY445_SX342_FMwebp_.jpg" alt="Spy x Family">
+      <div class="card-title">Spy x Family</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/16KZIqJMkvzHeX8TsP_tOoLHSoqJwuWYf" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/51m9ctmcRnL._SY445_SX342_FMwebp_.jpg" alt="Chainsaw Man">
+      <div class="card-title">Chainsaw Man</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1TZ6z_ePBI2zt12Kqv0I2AYegGR6LjOrp" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/515-EdWvVaL._SY445_SX342_FMwebp_.jpg" alt="Dragon Ball Manga">
+      <div class="card-title">Dragon Ball Manga</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1hyV1oaf6Cj-DiwYljSNt10xHOnAxjila" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81S8xoiksVL._SY466_.jpg" alt="Dragon Ball Super Manga">
+      <div class="card-title">Dragon Ball Super Manga</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1hcGBwfdgJchkPlZMX55YF52aZRNdbXW9" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/51fTR3fdvbL._SY445_SX342_FMwebp_.jpg" alt="Blue Lock Manga">
+      <div class="card-title">Blue Lock Manga</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1iSzHqkCiW5S44-_97x_6x_pTTMJrPrMH" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/51zcVAs0CDL._SY445_SX342_FMwebp_.jpg" alt="Dragon Ball Super (Color Edition)">
+      <div class="card-title">Dragon Ball Super (Color Edition)</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1DiPmxSEnK8mffjlJv-Mrka-Pg_qw5Zlj" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/51+KiK0PokL._SY445_SX342_FMwebp_.jpg" alt="The Legend of Zelda">
+      <div class="card-title">The Legend of Zelda</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1FhcZTDf0G1Fy6RlpcrsrSC-Pg63UZOqq" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81GIb6GMhRL._AC_UY218_.jpg" alt="The Promised Neverland">
+      <div class="card-title">The Promised Neverland</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1zZ9tlSypaIBKwM-1H9DjZA-P9Vyh6P-1" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/91dO754sXKL._AC_UY218_.jpg" alt="Sailor Moon">
+      <div class="card-title">Sailor Moon</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1wvJR_lTZCJ_b9QId26AW0X6aCfBMBQlB" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81dfhgbb2qL._AC_UY218_.jpg" alt="Bleach">
+      <div class="card-title">Bleach</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1dHK5v5NZNiDvlQ9VK06AAPFNngnkkQCZ" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/91RpwagB7uL._AC_UY218_.jpg" alt="Naruto">
+      <div class="card-title">Naruto</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/14Ri_EP2Q6HxWJQbU97ZEAjSc9MfTmKI3" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/91eRoWSACCL._AC_UY218_.jpg" alt="Berserk">
+      <div class="card-title">Berserk</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/19DUxPkVk-4ixzNcLMIMjiQS5Zs6aCm7T" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81fNp2prCvL._AC_UY218_.jpg" alt="Sakamoto Days">
+      <div class="card-title">Sakamoto Days</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1IMqZo3XL_Go8PYa8i5iMH-3w5kEE-fTC" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/71mrzhDK+mL._AC_UY218_.jpg" alt="Kingdom Hearts">
+      <div class="card-title">Kingdom Hearts</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1uiqdQByTMfGeeQV8ut3o0BYuZu52CR7i" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/91SLpHwjp8L._AC_UY218_.jpg" alt="Dr. Stone">
+      <div class="card-title">Dr. Stone</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/12P8fxgEN_fJlbJ4z_X6lorJUud7Qc0jS" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81QBIpj6O+L._AC_UY218_.jpg" alt="Darling in the FranXX">
+      <div class="card-title">Darling in the FranXX</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1Ty8TRLsEhVwDR0mMXe9bvZw2Mjgqbfr7" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81AjnD8nvHL._AC_UY218_.jpg" alt="My Hero Academia">
+      <div class="card-title">My Hero Academia</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1OqoLf9E0z6e2MRD2g3UNKP3hE9puC4ts" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/91fhhUusE1L._AC_UY218_.jpg" alt="Fullmetal Alchemist">
+      <div class="card-title">Fullmetal Alchemist</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1u-a-NGgGUHD-h5RBtVkYnp8TwJosaJIe" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81kHWcb7n4L._AC_UY218_.jpg" alt="Dandadan">
+      <div class="card-title">Dandadan</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1JYZKlpyw20ghU7LHLs6ECUISE9SDZ7_D" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81TmHlRleJL._AC_UY218_.jpg" alt="Jujutsu Kaisen">
+      <div class="card-title">Jujutsu Kaisen</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1n7qvsviHVecx08qMxI0bTRzpO3WmAEjG" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/917S7DpMlvL._AC_UY218_.jpg" alt="Inuyasha">
+      <div class="card-title">Inuyasha</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1Rl63s8mf0P41xy-bVNamLoEz7xAkf-nL" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81Z59vGq+kL._AC_UL320_.jpg" alt="Sonic the Hedgehog">
+      <div class="card-title">Sonic the Hedgehog</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1ilEix-RfR10sBDAejkvzVubhCr_bSagf" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81O2AVjjzzL._AC_UY218_.jpg" alt="Sonic the Hedgehog: IDW Publishing">
+      <div class="card-title">Sonic the Hedgehog: IDW Publishing</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/folders/1Nb17fir8Loz7Zx9gkrlAGXvE7uAzi7TG" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/91UuFrPsGcL._AC_UL320_.jpg" alt="Teenage Mutant Ninja Turtles">
+      <div class="card-title">Teenage Mutant Ninja Turtles</div>
+    </a>
+
+    <a class="movie-card" href="https://drive.google.com/drive/folders/15F1mjpPm_zj8bCcbDpjoB9MbMtzuEKJE" target="_blank">
+      <img src="https://m.media-amazon.com/images/I/81yQJe+tJKL._AC_UY218_.jpg" alt="Omori">
+      <div class="card-title">Omori</div>
+    </a>
+
+    <p class="no-results" id="no-results">No titles found.</p>
+  </div>
+</div>
+
+<script>
+  /* ── Starfield ── */
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [];
+  const mouse = { x: -9999, y: -9999 };
+  const NUM = 160, REPEL_RADIUS = 140, REPEL_STRENGTH = 12;
+  const RETURN_FRICTION = 0.88, FLEE_FRICTION = 0.75;
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function rand(a, b) { return a + Math.random() * (b - a); }
+  function makeStar() {
+    const angle = Math.random() * Math.PI * 2, speed = rand(0.08, 0.32);
+    return {
+      x: Math.random() * W, y: Math.random() * H, ox: 0, oy: 0,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      size: rand(0.8, 2.4),
+      color: Math.random() < 0.15 ? `hsl(${rand(200,260)},80%,85%)` : '#ffffff',
+      twinkleSpeed: rand(0.005, 0.02), twinkleOffset: Math.random() * Math.PI * 2,
+      alpha: rand(0.4, 1.0), shape: Math.random() < 0.3 ? 'star4' : 'dot'
+    };
+  }
+  function drawStar4(x, y, r, alpha, color) {
+    ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = color;
+    ctx.translate(x, y); ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const a = (i * Math.PI) / 4, rad = i % 2 === 0 ? r : r * 0.4;
+      i === 0 ? ctx.moveTo(Math.cos(a)*rad, Math.sin(a)*rad) : ctx.lineTo(Math.cos(a)*rad, Math.sin(a)*rad);
+    }
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  function drawDot(x, y, r, alpha, color) {
+    ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  }
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    ctx.clearRect(0, 0, W, H);
+    const bg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.8);
+    bg.addColorStop(0, '#07071a'); bg.addColorStop(1, '#000000');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    t += 0.016;
+    for (const s of stars) {
+      s.x += s.vx; s.y += s.vy;
+      if (s.x < -5) s.x = W + 5; if (s.x > W + 5) s.x = -5;
+      if (s.y < -5) s.y = H + 5; if (s.y > H + 5) s.y = -5;
+      const dx = s.x - mouse.x, dy = s.y - mouse.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < REPEL_RADIUS && dist > 0) {
+        const norm = 1 - (dist / REPEL_RADIUS), force = norm * norm * REPEL_STRENGTH;
+        s.ox += (dx/dist)*force*0.18; s.oy += (dy/dist)*force*0.18;
+        s.ox *= FLEE_FRICTION; s.oy *= FLEE_FRICTION;
+      } else { s.ox *= RETURN_FRICTION; s.oy *= RETURN_FRICTION; }
+      const rx = s.x + s.ox, ry = s.y + s.oy;
+      const twinkle = 0.5 + 0.5 * Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset);
+      const alpha = s.alpha * (0.6 + 0.4 * twinkle);
+      if (s.shape === 'star4') drawStar4(rx, ry, s.size*1.6, alpha, s.color);
+      else drawDot(rx, ry, s.size, alpha, s.color);
+    }
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+  resize();
+  stars = Array.from({ length: NUM }, makeStar);
+  animate();
+
+  /* ── UI Functions ── */
+  function surpriseMe() {
+    const cards = Array.from(document.querySelectorAll('.movie-card'));
+    const visible = cards.filter(c => c.style.display !== 'none');
+    const pick = visible[Math.floor(Math.random() * visible.length)];
+    window.open(pick.href, '_blank');
+  }
+
+  function filterCards() {
+    const query = document.getElementById('search').value.toLowerCase();
+    const cards = document.querySelectorAll('.movie-card');
+    let visible = 0;
+    cards.forEach(card => {
+      const title = card.querySelector('.card-title').textContent.toLowerCase();
+      if (title.includes(query)) { card.style.display = 'block'; visible++; }
+      else { card.style.display = 'none'; }
+    });
+    document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('search').blur();
+  });
+</script>
+
+</body>
+</html>
